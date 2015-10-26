@@ -59,4 +59,5 @@ CXXFLAGS        := -std=c++11 -Wall -Wextra -pedantic -O3
 # ===============
 # 'include conf/makeball.mk' for pre-configured options
 # to use the library 'makeball'
+include conf/googletest.mk
 
