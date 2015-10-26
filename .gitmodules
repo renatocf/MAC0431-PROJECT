@@ -1,6 +1,6 @@
 [submodule "make"]
 	path = make
-	url = git@github.com:renatocf/make.git
+	url = https://github.com/renatocf/make.git
 [submodule "external/gtest"]
 	path = external/gtest
 	url = https://chromium.googlesource.com/external/googletest.git
