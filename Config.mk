@@ -43,9 +43,9 @@
 # =======
 # CPPFLAGS        := # Precompiler Flags
 # ASFLAGS         := # Assembly Flags
-CFLAGS          := -ansi -Wall -Wextra -pedantic -O3 -g
-FFLAGS          := -ffree-form -Wall -Wextra -pedantic -O3 -g
-CXXFLAGS        := -std=c++11 -Wall -Wextra -pedantic -O3 -g
+CFLAGS          := -ansi -Wall -Wextra -pedantic -O3 -g -Wno-deprecated-declarations
+FFLAGS          := -ffree-form -Wall -Wextra -pedantic -O3 -g -Wno-deprecated-declarations
+CXXFLAGS        := -std=c++11 -Wall -Wextra -pedantic -O3 -g -Wno-deprecated-declarations
 # LDFLAGS         := # Linker flags
 
 # Documentation
@@ -59,6 +59,7 @@ CXXFLAGS        := -std=c++11 -Wall -Wextra -pedantic -O3 -g
 # ===============
 # 'include conf/makeball.mk' for pre-configured options
 # to use the library 'makeball'
+include conf/eigen.mk
 include conf/openmp.mk
 include conf/googletest.mk
 
