@@ -40,7 +40,7 @@ std::vector<Drop> generate_drops(unsigned int timestamp, double drop_probability
   for (unsigned int i = 0; i < timestamp; i++) {
     if (generate_probability() < drop_probability) {
       drops.emplace_back(i);
-    } 
+    }
   }
   return drops;
 }
@@ -51,6 +51,12 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
+  std::string input_file(argv[1]);
+  int num_threads = (atoi(argv[2])) <= 0 ? atoi(argv[2]) : omp_get_num_threads();
+
+  // OpenMP initialization
+  omp_set_num_threads(num_threads);
+
   waves::Dimension<2> lake_dimensions;
   waves::Dimension<2> matrix_dimensions;
   unsigned int time;
@@ -60,7 +66,7 @@ int main(int argc, char **argv) {
   double drop_probability;
   unsigned int seed;
 
-  std::ifstream input(argv[1]);
+  std::ifstream input(input_file);
 
   input >> lake_dimensions;
   input >> matrix_dimensions;
@@ -71,13 +77,11 @@ int main(int argc, char **argv) {
   input >> drop_probability;
   input >> seed;
 
-  omp_set_num_threads(atoi(argv[2]));
-
   srand(seed);
   auto drops = generate_drops(num_iterations, drop_probability/100);
 
   for (auto drop : drops) {
-    std::cout << drop.time() << std::endl; 
+    std::cout << drop.time() << std::endl;
   }
   return EXIT_SUCCESS;
 }
