@@ -17,27 +17,32 @@
 // Standard headers
 #include <array>
 #include <cstdlib>
+#include <fstream>
+#include <cstdlib>
 #include <iostream>
 
-template<std::size_t N>
-using Dimension = std::array<unsigned int, N>;
+// External headers
+#include <omp.h>
 
-template<std::size_t N>
-std::istream &operator>>(std::istream &input, Dimension<N> &dim) {
-  if (dim.empty()) return input;
+// Waves headers
+#include "waves/Drop.hpp"
+using namespace waves;
 
-  char lpar, rpar, comma;
-  if (dim.size() != 1) input >> lpar;
+// Waves templates
+#include "waves/Dimension.tcc"
 
-  input >> dim[0];
-  for (unsigned int i = 1; i < dim.size(); i++) {
-    input >> dim[i];
-    input >> comma;
+double generate_probability() {
+  return static_cast<double>(rand())/RAND_MAX;
+}
+
+std::vector<Drop> generate_drops(unsigned int timestamp, double drop_probability) {
+  std::vector<Drop> drops;
+  for (unsigned int i = 0; i < timestamp; i++) {
+    if (generate_probability() < drop_probability) {
+      drops.emplace_back(i);
+    } 
   }
-
-  if (dim.size() != 1) input >> rpar;
-
-  return input;
+  return drops;
 }
 
 int main(int argc, char **argv) {
@@ -46,21 +51,33 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  Dimension<2> lake_dimensions;
-  Dimension<2> matrix_dimensions;
+  waves::Dimension<2> lake_dimensions;
+  waves::Dimension<2> matrix_dimensions;
   unsigned int time;
   double speed;
+  double height_error;
   unsigned int num_iterations;
   double drop_probability;
   unsigned int seed;
 
-  std::cin >> lake_dimensions;
-  std::cin >> matrix_dimensions;
-  std::cin >> time;
-  std::cin >> speed;
-  std::cin >> num_iterations;
-  std::cin >> drop_probability;
-  std::cin >> seed;
+  std::ifstream input(argv[1]);
 
+  input >> lake_dimensions;
+  input >> matrix_dimensions;
+  input >> time;
+  input >> speed;
+  input >> height_error;
+  input >> num_iterations;
+  input >> drop_probability;
+  input >> seed;
+
+  omp_set_num_threads(atoi(argv[2]));
+
+  srand(seed);
+  auto drops = generate_drops(num_iterations, drop_probability/100);
+
+  for (auto drop : drops) {
+    std::cout << drop.time() << std::endl; 
+  }
   return EXIT_SUCCESS;
 }
