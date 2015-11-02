@@ -43,7 +43,7 @@
 # =======
 # CPPFLAGS        := # Precompiler Flags
 # ASFLAGS         := # Assembly Flags
-COMMFLAGS       := -Wall -Wextra -pedantic -O3 -g -Wno-deprecated-declarations -msse2
+COMMFLAGS       := -Wall -Wextra -pedantic -O3 -g -Wno-deprecated-declarations -msse2 -lm
 CFLAGS          := -ansi $(COMMFLAGS)
 FFLAGS          := -ffree-form $(COMMFLAGS)
 CXXFLAGS        := -std=c++11 $(COMMFLAGS)

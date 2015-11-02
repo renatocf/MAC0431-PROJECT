@@ -14,8 +14,16 @@
 /* limitations under the License.                                             */
 /******************************************************************************/
 
+#include <array>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+
 #ifndef WAVES_WAVES_DROP_
 #define WAVES_WAVES_DROP_
+
+//math library
+#include <cmath>
 
 // Standard headers
 #include <vector>
@@ -35,10 +43,18 @@ class Drop {
   	return time_;	
   }
 
+  float height_function(float ro, float speed) {
+    std::cout << "velocidade: " << speed << std::endl;
+    std::cout << "time(): " << time() << std::endl;
+
+    height_ = (ro - speed*time())*std::exp((-1)*std::pow((ro-speed*time()),2))*std::exp((-1)*(time()/10)); 
+    return height_;
+  }
+
  private: 
   unsigned int time_;
   double distance_;
-  double height_;
+  float height_;
   std::vector<Point> affected_points_;
 };
 

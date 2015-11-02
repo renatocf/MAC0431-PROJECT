@@ -18,7 +18,6 @@
 #include <array>
 #include <cstdlib>
 #include <fstream>
-#include <cstdlib>
 #include <iostream>
 
 // External headers
@@ -59,7 +58,7 @@ int main(int argc, char **argv) {
 
   waves::Dimension<2> lake_dimensions;
   waves::Dimension<2> matrix_dimensions;
-  unsigned int time;
+  float time;
   double speed;
   double height_error;
   unsigned int num_iterations;
@@ -78,10 +77,16 @@ int main(int argc, char **argv) {
   input >> seed;
 
   srand(seed);
+
   auto drops = generate_drops(num_iterations, drop_probability/100);
+  
 
   for (auto drop : drops) {
     std::cout << drop.time() << std::endl;
+    std::cout << speed << std::endl;
+    std::cout << height_error << std::endl;
+    std::cout << "calculado: " << drop.height_function(1, speed) << std::endl;
   }
+
   return EXIT_SUCCESS;
 }
