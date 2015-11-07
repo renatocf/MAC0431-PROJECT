@@ -14,16 +14,36 @@
 /* limitations under the License.                                             */
 /******************************************************************************/
 
-#ifndef WAVES_WAVES_POINT_
-#define WAVES_WAVES_POINT_
+#ifndef HPP_WAVES_CIRCLEBUILDER_DEFINED
+#define HPP_WAVES_CIRCLEBUILDER_DEFINED
 
 // Standard headers
-#include <utility>
+#include <vector>
+#include <map>
 
-namespace waves {
+// Waves headers
+#include "waves/Point.hpp"
 
-using Point = std::pair<int, int>;
+namespace waves 
+{
+    class CircleBuilder
+    {
+     private:
+      std::map<Point, double> distanceTable_;
 
-}  // namespace waves
+      void unfoldPoints(std::vector<Point>& points);
+      void addInvertedPoints(std::vector<Point>& points);
+      void addOpposedVerticalPoints(std::vector<Point>& points);
+      void addOpposedHorizontalPoints(std::vector<Point>& points);
+      void addOffset(std::vector<Point>& points, Point offset);
+      void removeExcess(std::vector<Point>& points);
+      void createInitialPoints(std::vector<Point>& points, double radius);
+      double distance(Point point);
 
-#endif // WAVES_WAVES_POINT_
+     public:
+      int nRoot_ = 0;
+      std::vector<Point> createCircle(Point origin, double radius);
+    };
+}
+
+#endif
