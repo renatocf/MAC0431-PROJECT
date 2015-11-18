@@ -20,11 +20,17 @@
 //#include <fstream>
 //#include <cstdlib>
 #include <iostream>
+#include <fstream> 
 #include <vector>
 
-void colorIntensity(double hmax, double pmax, double h)
+using namespace std;
+
+
+
+string colorIntensity(double hmax, double pmax, double h)
 {
 	int delta;
+	string image;
 	if(hmax>-1*pmax)
 	{
 		delta = hmax/255;
@@ -35,25 +41,36 @@ void colorIntensity(double hmax, double pmax, double h)
 	}
 	if(h<0)
 	{
-		std::cout << h/delta << " 0 0" << std::endl;
+		image = h/delta + " 0 0" + endl;
 	}
 	else
 	{
-		std::cout << "0 0 " << h/delta << std::endl;
+		image = "0 0 " + h/delta + endl;
 	}
+	return image;
 }
 
-void generateImage(int width, int height, double hmax, double pmax, std::vector<std::vector<double> >& lake)
+string generateImage(int width, int height, double hmax, double pmax, Lake lake)
 {
 	int i, j;
-	std::cout << "P3" << std::endl;
-	std::cout << width << " " << height << std::endl;
+	string image;
+	image = "P3" + endl;
+	image = width + " " + height + endl;
 
 	for(i = 0; i<lake.size(); i++)
 	{
-		for(j = 0; j<lake[i].size(); j++)
+		for(j = 0; j<lake(i).size(); j++)
 		{
-			colorIntensity(hmax, pmax, lake[i][j]);
+			image += colorIntensity(hmax, pmax, lake(i,j);
 		}
 	}
+	return image;
+}
+
+void generateImageFile(int width, int height, double hmax, double pmax, Lake lake)
+{
+	ofstream out; 
+	out.open("lake");
+	out<<generateImage(width, height, hmax, pmax, lake);
+	out.close();
 }
