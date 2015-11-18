@@ -35,26 +35,31 @@ namespace waves {
 
 class Drop {
  public:
-  Drop(unsigned int time)
+  Drop(int time)
       : time_(time) {
   }
 
-  unsigned int time() const { 
-  	return time_;	
+  int time() const { 
+    return time_; 
   }
 
-  float height_function(float ro, float speed) {
-    std::cout << "velocidade: " << speed << std::endl;
-    std::cout << "time(): " << time() << std::endl;
+  double height_function(double ro, double speed) {
 
-    height_ = (ro - speed*time())*std::exp((-1)*std::pow((ro-speed*time()),2))*std::exp((-1)*(time()/10)); 
+    double factor_one = (ro - speed*time());
+    double exp_one = (-1)*std::pow((ro-speed*time()),2);
+    double exp_two = (-1)*(time()/10);
+    double factor_two = std::exp(exp_one);
+    double factor_three = std::exp(exp_two);
+
+    height_ = factor_one*factor_two*factor_three; 
+
     return height_;
   }
 
  private: 
-  unsigned int time_;
+  int time_;
   double distance_;
-  float height_;
+  double height_;
   std::vector<Point> affected_points_;
 };
 

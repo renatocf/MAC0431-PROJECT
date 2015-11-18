@@ -82,10 +82,7 @@ int main(int argc, char **argv) {
   
 
   for (auto drop : drops) {
-    std::cout << drop.time() << std::endl;
-    std::cout << speed << std::endl;
-    std::cout << height_error << std::endl;
-    std::cout << "calculado: " << drop.height_function(1, speed) << std::endl;
+    drop.height_function((speed*drop.time()+2), speed);
   }
 
   return EXIT_SUCCESS;
