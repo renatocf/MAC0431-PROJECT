@@ -15,7 +15,7 @@
 //****************************************************************************//
 
 // Waves headers
-#include "waves/Drop.hpp"
+#include "waves/Dimension.hpp"
 
 namespace waves {
 
@@ -23,16 +23,38 @@ namespace waves {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-Drop::Drop(unsigned int time)
-    : time_(time) {
+Dimension::Dimension(unsigned int width, unsigned int height)
+    : width_(width), height_(height) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-unsigned int Drop::time() const {
-  return time_;
+unsigned int Dimension::width() const {
+  return width_;
+}
+
+/*----------------------------------------------------------------------------*/
+
+unsigned int Dimension::height() const {
+  return height_;
+}
+
+/*----------------------------------------------------------------------------*/
+/*                              FRIEND FUNTIONS                               */
+/*----------------------------------------------------------------------------*/
+
+std::istream &operator>>(std::istream &input, Dimension& dim) {
+  char lpar, rpar, comma;
+
+  input >> lpar;
+  input >> dim.width_;
+  input >> comma;
+  input >> dim.height_;
+  input >> rpar;
+
+  return input;
 }
 
 /*----------------------------------------------------------------------------*/

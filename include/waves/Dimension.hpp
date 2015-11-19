@@ -14,27 +14,31 @@
 // limitations under the License.                                             //
 //****************************************************************************//
 
-// Waves headers
-#include "waves/Drop.hpp"
+#ifndef WAVES_WAVES_DIMENSION_
+#define WAVES_WAVES_DIMENSION_
+
+// Standard headers
+#include <iostream>
 
 namespace waves {
 
-/*----------------------------------------------------------------------------*/
-/*                                CONSTRUCTORS                                */
-/*----------------------------------------------------------------------------*/
+class Dimension {
+ public:
+  // Constructors
+  explicit Dimension(unsigned int width = 0, unsigned int height = 0);
 
-Drop::Drop(unsigned int time)
-    : time_(time) {
-}
+  // Concrete methods
+  unsigned int width() const;
+  unsigned int height() const;
 
-/*----------------------------------------------------------------------------*/
-/*                              CONCRETE METHODS                              */
-/*----------------------------------------------------------------------------*/
+  // Friend functions
+  friend std::istream &operator>>(std::istream &input, Dimension &dim);
 
-unsigned int Drop::time() const {
-  return time_;
-}
-
-/*----------------------------------------------------------------------------*/
+ private:
+  // Instance variables
+  unsigned int width_, height_;
+};
 
 }  // namespace waves
+
+#endif  // WAVES_WAVES_DIMENSION_

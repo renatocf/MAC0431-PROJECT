@@ -1,44 +1,45 @@
-/******************************************************************************/
-/* Copyright 2015 MAC0431-PROJECT                                             */
-/*                                                                            */
-/* Licensed under the Apache License, Version 2.0 (the "License");            */
-/* you may not use this file except in compliance with the License.           */
-/* You may obtain a copy of the License at                                    */
-/*                                                                            */
-/*     http://www.apache.org/licenses/LICENSE-2.0                             */
-/*                                                                            */
-/* Unless required by applicable law or agreed to in writing, software        */
-/* distributed under the License is distributed on an "AS IS" BASIS,          */
-/* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   */
-/* See the License for the specific language governing permissions and        */
-/* limitations under the License.                                             */
-/******************************************************************************/
+//****************************************************************************//
+// Copyright 2015 MAC0431-PROJECT                                             //
+//                                                                            //
+// Licensed under the Apache License, Version 2.0 (the "License");            //
+// you may not use this file except in compliance with the License.           //
+// You may obtain a copy of the License at                                    //
+//                                                                            //
+//     http://www.apache.org/licenses/LICENSE-2.0                             //
+//                                                                            //
+// Unless required by applicable law or agreed to in writing, software        //
+// distributed under the License is distributed on an "AS IS" BASIS,          //
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   //
+// See the License for the specific language governing permissions and        //
+// limitations under the License.                                             //
+//****************************************************************************//
+
+// C headers
+#include <omp.h>
 
 // Standard headers
 #include <array>
+#include <string>
+#include <vector>
 #include <cstdlib>
 #include <fstream>
-#include <cstdlib>
 #include <iostream>
-
-// External headers
-#include <omp.h>
 
 // Waves headers
 #include "waves/Drop.hpp"
-using namespace waves;
+#include "waves/Lake.hpp"
+#include "waves/Dimension.hpp"
 
-// Waves templates
-#include "waves/Dimension.tcc"
-
-double generate_probability() {
-  return static_cast<double>(rand())/RAND_MAX;
+double generate_probability(unsigned int *seed) {
+  return static_cast<double>(rand_r(seed))/RAND_MAX;
 }
 
-std::vector<Drop> generate_drops(unsigned int timestamp, double drop_probability) {
-  std::vector<Drop> drops;
+std::vector<waves::Drop> generate_drops(unsigned int timestamp,
+                                        double drop_probability,
+                                        unsigned int *seed) {
+  std::vector<waves::Drop> drops;
   for (unsigned int i = 0; i < timestamp; i++) {
-    if (generate_probability() < drop_probability) {
+    if (generate_probability(seed) < drop_probability) {
       drops.emplace_back(i);
     }
   }
@@ -52,13 +53,14 @@ int main(int argc, char **argv) {
   }
 
   std::string input_file(argv[1]);
-  int num_threads = (atoi(argv[2])) <= 0 ? atoi(argv[2]) : omp_get_num_threads();
+  int num_threads
+    = (atoi(argv[2])) <= 0 ? atoi(argv[2]) : omp_get_num_threads();
 
   // OpenMP initialization
   omp_set_num_threads(num_threads);
 
-  waves::Dimension<2> lake_dimensions;
-  waves::Dimension<2> matrix_dimensions;
+  waves::Dimension lake_dimensions;
+  waves::Dimension matrix_dimensions;
   unsigned int time;
   double speed;
   double height_error;
@@ -77,11 +79,14 @@ int main(int argc, char **argv) {
   input >> drop_probability;
   input >> seed;
 
-  srand(seed);
-  auto drops = generate_drops(num_iterations, drop_probability/100);
+  auto drops = generate_drops(num_iterations, drop_probability/100, &seed);
 
   for (auto drop : drops) {
     std::cout << drop.time() << std::endl;
   }
+
+  waves::Lake lake(lake_dimensions, matrix_dimensions);
+  lake.printPGM(std::cout, 100, 100, 10, 10);
+
   return EXIT_SUCCESS;
 }
