@@ -29,22 +29,7 @@
 #include "waves/Drop.hpp"
 #include "waves/Lake.hpp"
 #include "waves/Dimension.hpp"
-
-double generate_probability(unsigned int *seed) {
-  return static_cast<double>(rand_r(seed))/RAND_MAX;
-}
-
-std::vector<waves::Drop> generate_drops(unsigned int timestamp,
-                                        double drop_probability,
-                                        unsigned int *seed) {
-  std::vector<waves::Drop> drops;
-  for (unsigned int i = 0; i < timestamp; i++) {
-    if (generate_probability(seed) < drop_probability) {
-      drops.emplace_back(i);
-    }
-  }
-  return drops;
-}
+#include "waves/WaveProperties.hpp"
 
 int main(int argc, char **argv) {
   if (argc != 3) {
@@ -79,14 +64,11 @@ int main(int argc, char **argv) {
   input >> drop_probability;
   input >> seed;
 
-  auto drops = generate_drops(num_iterations, drop_probability/100, &seed);
+  waves::WaveProperties wave_properties(speed, height_error);
 
-  for (auto drop : drops) {
-    std::cout << drop.time() << std::endl;
-  }
-
-  waves::Lake lake(lake_dimensions, matrix_dimensions);
-  lake.printPGM(std::cout, 100, 100, 10, 10);
+  waves::Lake lake(lake_dimensions, matrix_dimensions, wave_properties, seed);
+  lake.rainFor(num_iterations, drop_probability);
+  lake.printPGM(std::cout);
 
   return EXIT_SUCCESS;
 }
