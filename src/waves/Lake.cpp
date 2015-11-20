@@ -37,7 +37,9 @@ Lake::Lake(const Dimension &lake_dimension,
            unsigned int seed)
     : width_(lake_dimension.width()), height_(lake_dimension.height()),
       matrix_(matrix_dimension.width(), matrix_dimension.height()),
-      wave_properties_(wave_properties), seed_(seed) {
+      wave_properties_(wave_properties), rng_(seed),
+      width_generator_(0, width_), height_generator_(0, height_),
+      probability_generator_(0.0, 1.0) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -83,15 +85,13 @@ void Lake::ripple(const Drop &/* drop */, unsigned int /* total_time */) {
 /*----------------------------------------------------------------------------*/
 
 inline Point Lake::drawPosition() const {
-  return Point(
-    static_cast<double>(rand_r(&seed_))/RAND_MAX * width_ / matrix_.cols(),
-    static_cast<double>(rand_r(&seed_))/RAND_MAX * height_ / matrix_.rows());
+  return Point(width_generator_(rng_), height_generator_(rng_));
 }
 
 /*----------------------------------------------------------------------------*/
 
 inline bool Lake::shouldDrop(double drop_probability) const {
-  return static_cast<double>(rand_r(&seed_))/RAND_MAX < drop_probability;
+  return probability_generator_(rng_) < drop_probability;
 }
 
 /*----------------------------------------------------------------------------*/

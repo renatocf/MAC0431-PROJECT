@@ -22,6 +22,7 @@
 
 // External headers
 #include "Eigen/Core"
+#include "prng_engine.hpp"
 
 // Waves headers
 #include "waves/Drop.hpp"
@@ -55,6 +56,11 @@ class Lake {
   Matrix matrix_;
   WaveProperties wave_properties_;
   mutable unsigned int seed_;
+  mutable sitmo::prng_engine rng_;
+
+  mutable std::uniform_int_distribution<unsigned int> width_generator_;
+  mutable std::uniform_int_distribution<unsigned int> height_generator_;
+  mutable std::uniform_real_distribution<double> probability_generator_;
 
   double max_depth_ = 0, max_height_ = 0;
 

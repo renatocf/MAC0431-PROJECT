@@ -63,4 +63,4 @@ CXXFLAGS        := -std=c++11 $(COMMFLAGS)
 include conf/eigen.mk
 include conf/openmp.mk
 include conf/googletest.mk
-
+include conf/sistmo_prng_engine.mk
