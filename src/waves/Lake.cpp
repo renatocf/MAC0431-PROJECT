@@ -85,8 +85,7 @@ void Lake::ripple(const Drop &/* drop */, unsigned int /* total_time */) {
 inline Point Lake::drawPosition() const {
   return Point(
     static_cast<double>(rand_r(&seed_))/RAND_MAX * width_ / matrix_.cols(),
-    static_cast<double>(rand_r(&seed_))/RAND_MAX * height_ / matrix_.rows()
-  );
+    static_cast<double>(rand_r(&seed_))/RAND_MAX * height_ / matrix_.rows());
 }
 
 /*----------------------------------------------------------------------------*/
