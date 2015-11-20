@@ -32,14 +32,14 @@
 #include "waves/WaveProperties.hpp"
 
 int main(int argc, char **argv) {
-  if (argc != 3) {
+  if (argc != 2 && argc != 3) {
     std::cerr << "USAGE: " << argv[0] << " param_file num_procs" << std::endl;
     return EXIT_FAILURE;
   }
 
   std::string input_file(argv[1]);
   int num_threads
-    = (atoi(argv[2])) <= 0 ? atoi(argv[2]) : omp_get_num_threads();
+    = (argc == 3 && atoi(argv[2]) <= 0) ? atoi(argv[2]) : omp_get_num_threads();
 
   // OpenMP initialization
   omp_set_num_threads(num_threads);
