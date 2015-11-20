@@ -23,8 +23,8 @@ namespace waves {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-Drop::Drop(unsigned int time)
-    : time_(time) {
+Drop::Drop(unsigned int time, Point position)
+    : time_(time), position_(position) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -33,6 +33,12 @@ Drop::Drop(unsigned int time)
 
 unsigned int Drop::time() const {
   return time_;
+}
+
+/*----------------------------------------------------------------------------*/
+
+Point Drop::position() const {
+  return position_;
 }
 
 /*----------------------------------------------------------------------------*/

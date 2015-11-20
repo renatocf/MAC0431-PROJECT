@@ -28,17 +28,16 @@ namespace waves {
 class Drop {
  public:
   // Constructors
-  explicit Drop(unsigned int time);
+  explicit Drop(unsigned int time, Point position);
 
   // Concrete methods
   unsigned int time() const;
+  Point position() const;
 
  private:
   // Instance variables
   unsigned int time_;
-  double distance_ = 0;
-  double height_ = 0;
-  std::vector<Point> affected_points_;
+  Point position_;
 };
 
 }  // namespace waves
