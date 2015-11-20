@@ -46,6 +46,7 @@ Lake::Lake(const Dimension &lake_dimension,
 
 void Lake::rainFor(unsigned int total_time,
                    double drop_probability) {
+# pragma omp parallel for schedule(dynamic, 100)
   for (unsigned int t = 0; t < total_time; t++)
     if (shouldDrop(drop_probability))
       ripple(drop(t), total_time);
