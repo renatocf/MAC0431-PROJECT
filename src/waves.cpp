@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
   double speed;
   double height_error;
   unsigned int num_iterations;
-  double drop_probability;
+  double drop_porcentage;
   unsigned int seed;
 
   std::ifstream input(input_file);
@@ -61,14 +61,14 @@ int main(int argc, char **argv) {
   input >> speed;
   input >> height_error;
   input >> num_iterations;
-  input >> drop_probability;
+  input >> drop_porcentage;
   input >> seed;
 
   waves::WaveProperties wave_properties(speed, height_error);
 
   waves::Lake lake(lake_dimensions, matrix_dimensions, wave_properties, seed);
-  lake.rainFor(num_iterations, drop_probability);
-  lake.printPGM(std::cout);
+  lake.rainFor(num_iterations, drop_porcentage/100);
+  // lake.printPGM(std::cout);
 
   return EXIT_SUCCESS;
 }
