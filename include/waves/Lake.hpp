@@ -24,7 +24,9 @@
 #include "Eigen/Core"
 
 // Waves headers
+#include "waves/Drop.hpp"
 #include "waves/Dimension.hpp"
+#include "waves/WaveProperties.hpp"
 
 namespace waves {
 
@@ -34,18 +36,34 @@ class Lake {
   using Matrix = Eigen::Matrix<std::atomic_int, Eigen::Dynamic, Eigen::Dynamic>;
 
   // Constructors
-  explicit Lake(const Dimension &lake_dimension);
   explicit Lake(const Dimension &lake_dimension,
-                const Dimension &matrix_dimension);
+                const WaveProperties &wave_properties,
+                unsigned int seed = 42);
+
+  explicit Lake(const Dimension &lake_dimension,
+                const Dimension &matrix_dimension,
+                const WaveProperties &wave_properties,
+                unsigned int seed = 42);
 
   // Concrete methods
-  void printPGM(std::ostream &os, unsigned int width,
-                                  unsigned int height,
-                                  double hmax, double pmax) const;
+  void rainFor(unsigned int time, double drop_probability);
+  void printPGM(std::ostream &os) const;
 
  private:
+  // Instance variables
   unsigned int width_, height_;
-  mutable Matrix matrix_;
+  Matrix matrix_;
+  WaveProperties wave_properties_;
+  mutable unsigned int seed_;
+
+  double max_depth_ = 0, max_height_ = 0;
+
+  // Concrete methods
+  void ripple(const Drop &drop, unsigned int total_time);
+
+  Point drawPosition() const;
+  bool shouldDrop(double drop_probability) const;
+  Drop drop(unsigned int time) const;
 };
 
 }  // namespace waves

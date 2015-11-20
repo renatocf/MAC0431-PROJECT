@@ -23,30 +23,43 @@ namespace waves {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-Lake::Lake(const Dimension &lake_dimension)
-    : Lake(lake_dimension, lake_dimension) {
+Lake::Lake(const Dimension &lake_dimension,
+           const WaveProperties &wave_properties,
+           unsigned int seed)
+    : Lake(lake_dimension, lake_dimension, wave_properties, seed) {
 }
 
 /*----------------------------------------------------------------------------*/
 
 Lake::Lake(const Dimension &lake_dimension,
-     const Dimension &matrix_dimension)
-    : width_(lake_dimension.width()),
-      height_(lake_dimension.height()),
-      matrix_(matrix_dimension.width(), matrix_dimension.height()) {
+           const Dimension &matrix_dimension,
+           const WaveProperties &wave_properties,
+           unsigned int seed)
+    : width_(lake_dimension.width()), height_(lake_dimension.height()),
+      matrix_(matrix_dimension.width(), matrix_dimension.height()),
+      wave_properties_(wave_properties), seed_(seed) {
 }
 
 /*----------------------------------------------------------------------------*/
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-void Lake::printPGM(std::ostream &os, unsigned int width,
-                                      unsigned int height,
-                                      double hmax, double pmax) const {
-  os << "P3" << std::endl;
-  os << width << " " << height << std::endl;
+void Lake::rainFor(unsigned int total_time,
+                   double drop_probability) {
+  for (unsigned int t = 0; t < total_time; t++)
+    if (shouldDrop(drop_probability))
+      ripple(drop(t), total_time);
+}
 
-  double delta = (hmax > -pmax) ? hmax/255 : -pmax/255;
+/*----------------------------------------------------------------------------*/
+
+void Lake::printPGM(std::ostream &os) const {
+  os << "P3" << std::endl;
+  os << matrix_.cols() << " " << matrix_.rows() << std::endl;
+
+  double delta
+    = (max_height_ > -max_depth_) ? max_height_/255 : -max_depth_/255;
+
   for (unsigned int j = 0; j < matrix_.cols(); j++) {
     for (unsigned int i = 0; i < matrix_.rows(); i++) {
       int h = matrix_(i, j);
@@ -57,6 +70,34 @@ void Lake::printPGM(std::ostream &os, unsigned int width,
         os << "0 0 " << h/delta << std::endl;
     }
   }
+}
+
+/*----------------------------------------------------------------------------*/
+
+void Lake::ripple(const Drop &/* drop */, unsigned int /* total_time */) {
+  // Given a drop, generate its corresponding wave
+  // Must set max_height_ and max_depth_
+}
+
+/*----------------------------------------------------------------------------*/
+
+inline Point Lake::drawPosition() const {
+  return Point(
+    static_cast<double>(rand_r(&seed_))/RAND_MAX * width_ / matrix_.cols(),
+    static_cast<double>(rand_r(&seed_))/RAND_MAX * height_ / matrix_.rows()
+  );
+}
+
+/*----------------------------------------------------------------------------*/
+
+inline bool Lake::shouldDrop(double drop_probability) const {
+  return static_cast<double>(rand_r(&seed_))/RAND_MAX < drop_probability;
+}
+
+/*----------------------------------------------------------------------------*/
+
+inline Drop Lake::drop(unsigned int time) const {
+  return Drop(time, drawPosition());
 }
 
 /*----------------------------------------------------------------------------*/
