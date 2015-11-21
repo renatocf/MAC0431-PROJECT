@@ -48,10 +48,23 @@ Lake::Lake(const Dimension &lake_dimension,
 
 void Lake::rainFor(unsigned int total_time,
                    float drop_probability) {
-# pragma omp parallel for schedule(dynamic, 100)
+
+  // WARNING: Operations not (yet) thread-safe
+  drops_.reserve(total_time);
+
+  #pragma omp parallel for schedule(static)
   for (unsigned int t = 0; t < total_time; t++)
     if (shouldDrop(drop_probability))
-      ripple(createDrop(t), total_time);
+      drops_.push_back(createDrop(t));
+
+  // Timestamp: [0..total_time-1]
+  for (unsigned int t = 0; t < total_time-1; t++)
+    for (unsigned int id = 0; id < drops_.size(); id++)
+      ripple(drops_[id], t);
+
+  // Timestamp: total_time
+  for (unsigned int id = 0; id < drops_.size(); id++)
+    rippleSnapshot(drops_[id], total_time);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -77,16 +90,88 @@ void Lake::printPGM(std::ostream &os) const {
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::ripple(const Drop &/* drop */, unsigned int /* total_time */) {
-  // Given a drop, generate its corresponding wave
-  // Must set max_height_ and max_depth_
+void Lake::printStatisticsTable(std::ostream &/* os */) const {
+  // TODO(erikaAkab): Print table with statistics for (x,y) lake positions
+  //                  Print *mean* and *standard deviation* (sqrt of variance).
+  //                  Use precition %12.7f
 }
 
 /*----------------------------------------------------------------------------*/
 
-inline float Lake::height(const Drop &drop, float r) const {
-  float distance = r - wave_properties_.speed() * drop.time();
+void Lake::ripple(const Drop &drop, unsigned int timestamp) {
+  auto r = radius(drop, timestamp);
+  auto h = height(drop, r);
+  auto points = affected_points(drop, r);
+
+  #pragma omp parallel for schedule(static)
+  for (unsigned int k = 0; k < points.size(); k++) {
+    updateMean(points[k].first, points[k].second, h);
+    updateVariance(points[k].first, points[k].second, h);
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+void Lake::rippleSnapshot(const Drop &drop, unsigned int timestamp) {
+  auto r = radius(drop, timestamp);
+  auto h = height(drop, r);
+  auto points = affected_points(drop, r);
+
+  #pragma omp parallel for schedule(static)
+  for (unsigned int k = 0; k < points.size(); k++) {
+    updateMean(points[k].first, points[k].second, h);
+    updateHeight(points[k].first, points[k].second, h);
+    updateVariance(points[k].first, points[k].second, h);
+  }
+}
+
+/*----------------------------------------------------------------------------*/
+
+inline float Lake::height(const Drop &drop, unsigned int radius) const {
+  float distance = radius - wave_properties_.speed() * drop.time();
   return distance / std::exp(distance*distance + drop.time()/10);
+}
+
+/*----------------------------------------------------------------------------*/
+
+inline float Lake::radius(const Drop &drop, unsigned int timestamp) const {
+  return wave_properties_.speed() * (timestamp - drop.time());
+}
+
+/*----------------------------------------------------------------------------*/
+
+inline std::vector<Point>
+Lake::affected_points(const Drop &/* drop */, unsigned int /* radius */) const {
+  // TODO(dhinihan): Given a drop, return all points affected by that drop
+  //                 with a wave whose center is in radius.
+
+  return std::vector<Point>{};
+}
+
+/*----------------------------------------------------------------------------*/
+
+void Lake::updateMean(unsigned int /* i */, unsigned int /* j */,
+                      float /* height */) {
+  // TODO(karinaawoki): Update mean for position (i,j) incrementally.
+  //                    Calculate mean of heights for all iterations.
+  //                    Tip: http://math.stackexchange.com/questions/106700/
+}
+
+/*----------------------------------------------------------------------------*/
+
+void Lake::updateHeight(unsigned int /* i */, unsigned int /* j */,
+                        float /* height */) {
+  // TODO(karinaawoki): Update height for position (i,j).
+  //                    Calculate sum of heigths mean for a given iteration.
+}
+
+/*----------------------------------------------------------------------------*/
+
+void Lake::updateVariance(unsigned int /* i */, unsigned int /* j */,
+                          float /* height */) {
+  // TODO(karinaawoki): Update variance for position (i,j) incrementally.
+  //                    Calculate variance of heights for all iterations.
+  //                    Tip: http://math.stackexchange.com/questions/102978/
 }
 
 /*----------------------------------------------------------------------------*/

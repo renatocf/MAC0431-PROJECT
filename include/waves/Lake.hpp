@@ -34,7 +34,7 @@ namespace waves {
 class Lake {
  public:
   // Alias
-  using Matrix = Eigen::Matrix<std::atomic_int, Eigen::Dynamic, Eigen::Dynamic>;
+  using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
 
   // Constructors
   explicit Lake(const Dimension &lake_dimension,
@@ -49,15 +49,16 @@ class Lake {
   // Concrete methods
   void rainFor(unsigned int time, float drop_probability);
   void printPGM(std::ostream &os) const;
+  void printStatisticsTable(std::ostream &os) const;
 
  private:
   // Instance variables
   unsigned int width_, length_;
-  Matrix height_;
+  Matrix height_, mean_, variance_;
   WaveProperties wave_properties_;
-  mutable unsigned int seed_;
-  mutable sitmo::prng_engine rng_;
+  std::vector<Drop> drops_;
 
+  mutable sitmo::prng_engine rng_;
   mutable std::uniform_int_distribution<unsigned int> row_distribution_;
   mutable std::uniform_int_distribution<unsigned int> column_distribution_;
   mutable std::uniform_real_distribution<float> probability_distribution_;
@@ -65,10 +66,20 @@ class Lake {
   float max_depth_ = 0, max_height_ = 0;
 
   // Concrete methods
-  void ripple(const Drop &drop, unsigned int total_time);
+  void ripple(const Drop &drop, unsigned int timestamp);
+  void rippleSnapshot(const Drop &drop, unsigned int timestamp);
 
-  float height(const Drop &drop, float r) const;
+  float height(const Drop &drop, unsigned int radius) const;
+  float radius(const Drop &drop, unsigned int timestamp) const;
+
+  std::vector<Point> affected_points(const Drop &drop, unsigned int radius) const;
+
+  void updateMean(unsigned int i, unsigned int j, float height);
+  void updateHeight(unsigned int i, unsigned int j, float height);
+  void updateVariance(unsigned int i, unsigned int j, float height);
+
   Point drawPosition() const;
+
   Drop createDrop(unsigned int time) const;
   bool shouldDrop(float drop_probability) const;
 };
