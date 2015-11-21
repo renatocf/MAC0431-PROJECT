@@ -47,7 +47,7 @@ void CircleBuilder::createInitialPoints(std::vector<Point>& points,
   int jMax = ceil(minCoordinate);
   for (int i = iMin; i <= radius+1; i++)
     for (int j = 0; j <= std::min(i, jMax); j++)
-      if (abs(distance(Point(i, j)) - radius) <= 0.5)
+      if (std::abs(distance(Point(i, j)) - radius) <= 0.5)
         points.emplace_back(i, j);
 }
 

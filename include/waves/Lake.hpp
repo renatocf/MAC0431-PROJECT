@@ -19,6 +19,7 @@
 
 // Standard headers
 #include <atomic>
+#include <vector>
 
 // External headers
 #include "Eigen/Core"
@@ -72,7 +73,8 @@ class Lake {
   float height(const Drop &drop, unsigned int radius) const;
   float radius(const Drop &drop, unsigned int timestamp) const;
 
-  std::vector<Point> affected_points(const Drop &drop, unsigned int radius) const;
+  std::vector<Point>
+  affected_points(const Drop &drop, unsigned int radius) const;
 
   void updateMean(unsigned int i, unsigned int j, float height);
   void updateHeight(unsigned int i, unsigned int j, float height);

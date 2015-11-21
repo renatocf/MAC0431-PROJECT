@@ -14,6 +14,9 @@
 // limitations under the License.                                             //
 //****************************************************************************//
 
+// Standard headers
+#include <vector>
+
 // Waves headers
 #include "waves/Lake.hpp"
 
@@ -48,7 +51,6 @@ Lake::Lake(const Dimension &lake_dimension,
 
 void Lake::rainFor(unsigned int total_time,
                    float drop_probability) {
-
   // WARNING: Operations not (yet) thread-safe
   drops_.reserve(total_time);
 
