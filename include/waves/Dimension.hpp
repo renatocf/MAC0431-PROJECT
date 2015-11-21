@@ -25,18 +25,18 @@ namespace waves {
 class Dimension {
  public:
   // Constructors
-  explicit Dimension(unsigned int width = 0, unsigned int height = 0);
+  explicit Dimension(unsigned int width = 0, unsigned int length = 0);
 
   // Concrete methods
   unsigned int width() const;
-  unsigned int height() const;
+  unsigned int length() const;
 
   // Friend functions
   friend std::istream &operator>>(std::istream &input, Dimension &dim);
 
  private:
   // Instance variables
-  unsigned int width_, height_;
+  unsigned int width_, length_;
 };
 
 }  // namespace waves

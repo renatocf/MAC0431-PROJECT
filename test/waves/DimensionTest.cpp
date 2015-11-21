@@ -37,5 +37,5 @@ TEST_F(ADimension, ShouldReadFromStream) {
   stream >> dimension2;
 
   ASSERT_EQ(dimension2.width(), 1u);
-  ASSERT_EQ(dimension2.height(), 2u);
+  ASSERT_EQ(dimension2.length(), 2u);
 }

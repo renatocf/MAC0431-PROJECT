@@ -23,8 +23,8 @@ namespace waves {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-Dimension::Dimension(unsigned int width, unsigned int height)
-    : width_(width), height_(height) {
+Dimension::Dimension(unsigned int width, unsigned int length)
+    : width_(width), length_(length) {
 }
 
 /*----------------------------------------------------------------------------*/
@@ -37,8 +37,8 @@ unsigned int Dimension::width() const {
 
 /*----------------------------------------------------------------------------*/
 
-unsigned int Dimension::height() const {
-  return height_;
+unsigned int Dimension::length() const {
+  return length_;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -51,7 +51,7 @@ std::istream &operator>>(std::istream &input, Dimension& dim) {
   input >> lpar;
   input >> dim.width_;
   input >> comma;
-  input >> dim.height_;
+  input >> dim.length_;
   input >> rpar;
 
   return input;
