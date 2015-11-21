@@ -36,7 +36,7 @@ Lake::Lake(const Dimension &lake_dimension,
            const WaveProperties &wave_properties,
            unsigned int seed)
     : width_(lake_dimension.width()), length_(lake_dimension.length()),
-      matrix_(matrix_dimension.width(), matrix_dimension.length()),
+      height_(matrix_dimension.width(), matrix_dimension.length()),
       wave_properties_(wave_properties), rng_(seed),
       row_distribution_(0, length_), column_distribution_(0, width_),
       probability_distribution_(0.0, 1.0) {
@@ -58,14 +58,14 @@ void Lake::rainFor(unsigned int total_time,
 
 void Lake::printPGM(std::ostream &os) const {
   os << "P3" << std::endl;
-  os << matrix_.cols() << " " << matrix_.rows() << std::endl;
+  os << height_.cols() << " " << height_.rows() << std::endl;
 
   float delta
     = (max_height_ > -max_depth_) ? max_height_/255 : -max_depth_/255;
 
-  for (unsigned int j = 0; j < matrix_.cols(); j++) {
-    for (unsigned int i = 0; i < matrix_.rows(); i++) {
-      int h = matrix_(i, j);
+  for (unsigned int j = 0; j < height_.cols(); j++) {
+    for (unsigned int i = 0; i < height_.rows(); i++) {
+      int h = height_(i, j);
       os << "(" << i << "," << j << "): " << std::endl;
       if (h < 0)
         os << h/delta << " 0 0" << std::endl;

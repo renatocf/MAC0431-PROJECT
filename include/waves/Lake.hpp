@@ -53,7 +53,7 @@ class Lake {
  private:
   // Instance variables
   unsigned int width_, length_;
-  Matrix matrix_;
+  Matrix height_;
   WaveProperties wave_properties_;
   mutable unsigned int seed_;
   mutable sitmo::prng_engine rng_;
