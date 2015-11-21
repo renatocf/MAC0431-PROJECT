@@ -84,6 +84,13 @@ void Lake::ripple(const Drop &/* drop */, unsigned int /* total_time */) {
 
 /*----------------------------------------------------------------------------*/
 
+inline double Lake::height(const Drop &drop, double r) const {
+  double distance = r - wave_properties_.speed() * drop.time();
+  return distance / std::exp(distance*distance + drop.time()/10);
+}
+
+/*----------------------------------------------------------------------------*/
+
 inline Point Lake::drawPosition() const {
   return Point(width_generator_(rng_), height_generator_(rng_));
 }

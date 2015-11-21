@@ -67,6 +67,7 @@ class Lake {
   // Concrete methods
   void ripple(const Drop &drop, unsigned int total_time);
 
+  double height(const Drop &drop, double r) const;
   Point drawPosition() const;
   bool shouldDrop(double drop_probability) const;
   Drop drop(unsigned int time) const;
