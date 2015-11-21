@@ -69,8 +69,8 @@ class Lake {
 
   float height(const Drop &drop, float r) const;
   Point drawPosition() const;
+  Drop createDrop(unsigned int time) const;
   bool shouldDrop(float drop_probability) const;
-  Drop drop(unsigned int time) const;
 };
 
 }  // namespace waves

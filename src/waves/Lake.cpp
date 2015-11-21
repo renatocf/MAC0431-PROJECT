@@ -51,7 +51,7 @@ void Lake::rainFor(unsigned int total_time,
 # pragma omp parallel for schedule(dynamic, 100)
   for (unsigned int t = 0; t < total_time; t++)
     if (shouldDrop(drop_probability))
-      ripple(drop(t), total_time);
+      ripple(createDrop(t), total_time);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -97,14 +97,14 @@ inline Point Lake::drawPosition() const {
 
 /*----------------------------------------------------------------------------*/
 
-inline bool Lake::shouldDrop(float drop_probability) const {
-  return probability_distribution_(rng_) < drop_probability;
+inline Drop Lake::createDrop(unsigned int time) const {
+  return Drop(time, drawPosition());
 }
 
 /*----------------------------------------------------------------------------*/
 
-inline Drop Lake::drop(unsigned int time) const {
-  return Drop(time, drawPosition());
+inline bool Lake::shouldDrop(float drop_probability) const {
+  return probability_distribution_(rng_) < drop_probability;
 }
 
 /*----------------------------------------------------------------------------*/
