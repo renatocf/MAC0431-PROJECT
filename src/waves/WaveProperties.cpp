@@ -31,13 +31,13 @@ WaveProperties::WaveProperties(double speed, double error)
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-double WaveProperties::speed() {
+double WaveProperties::speed() const {
   return speed_;
 }
 
 /*----------------------------------------------------------------------------*/
 
-double WaveProperties::error() {
+double WaveProperties::error() const {
   return error_;
 }
 

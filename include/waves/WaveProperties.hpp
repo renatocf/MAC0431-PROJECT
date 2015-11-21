@@ -25,8 +25,8 @@ struct WaveProperties {
   WaveProperties(double speed, double error);
 
   // Concrete methods
-  double speed();
-  double error();
+  double speed() const;
+  double error() const;
 
  private:
   // Instance variables
