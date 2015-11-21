@@ -58,8 +58,8 @@ class Lake {
   mutable unsigned int seed_;
   mutable sitmo::prng_engine rng_;
 
-  mutable std::uniform_int_distribution<unsigned int> width_generator_;
-  mutable std::uniform_int_distribution<unsigned int> length_generator_;
+  mutable std::uniform_int_distribution<unsigned int> row_generator_;
+  mutable std::uniform_int_distribution<unsigned int> column_generator_;
   mutable std::uniform_real_distribution<float> probability_generator_;
 
   float max_depth_ = 0, max_height_ = 0;

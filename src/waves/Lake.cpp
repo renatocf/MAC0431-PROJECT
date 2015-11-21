@@ -38,7 +38,7 @@ Lake::Lake(const Dimension &lake_dimension,
     : width_(lake_dimension.width()), length_(lake_dimension.length()),
       matrix_(matrix_dimension.width(), matrix_dimension.length()),
       wave_properties_(wave_properties), rng_(seed),
-      width_generator_(0, width_), length_generator_(0, length_),
+      row_generator_(0, length_), column_generator_(0, width_),
       probability_generator_(0.0, 1.0) {
 }
 
@@ -92,7 +92,7 @@ inline float Lake::height(const Drop &drop, float r) const {
 /*----------------------------------------------------------------------------*/
 
 inline Point Lake::drawPosition() const {
-  return Point(width_generator_(rng_), length_generator_(rng_));
+  return Point(row_generator_(rng_), column_generator_(rng_));
 }
 
 /*----------------------------------------------------------------------------*/
