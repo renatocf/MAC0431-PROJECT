@@ -107,6 +107,7 @@ void Lake::ripple(const Drop &drop, unsigned int timestamp) {
 
   #pragma omp parallel for schedule(static)
   for (unsigned int k = 0; k < points.size(); k++) {
+    // TODO(dhinihan): Calculate distance of each point to drop
     updateMean(points[k].first, points[k].second, h);
     updateVariance(points[k].first, points[k].second, h);
   }
@@ -121,6 +122,7 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int timestamp) {
 
   #pragma omp parallel for schedule(static)
   for (unsigned int k = 0; k < points.size(); k++) {
+    // TODO(dhinihan): Calculate distance of each point to drop
     updateMean(points[k].first, points[k].second, h);
     updateHeight(points[k].first, points[k].second, h);
     updateVariance(points[k].first, points[k].second, h);
