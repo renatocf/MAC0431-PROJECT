@@ -47,7 +47,7 @@ class Lake {
                 unsigned int seed = 42);
 
   // Concrete methods
-  void rainFor(unsigned int time, double drop_probability);
+  void rainFor(unsigned int time, float drop_probability);
   void printPGM(std::ostream &os) const;
 
  private:
@@ -60,16 +60,16 @@ class Lake {
 
   mutable std::uniform_int_distribution<unsigned int> width_generator_;
   mutable std::uniform_int_distribution<unsigned int> height_generator_;
-  mutable std::uniform_real_distribution<double> probability_generator_;
+  mutable std::uniform_real_distribution<float> probability_generator_;
 
-  double max_depth_ = 0, max_height_ = 0;
+  float max_depth_ = 0, max_height_ = 0;
 
   // Concrete methods
   void ripple(const Drop &drop, unsigned int total_time);
 
-  double height(const Drop &drop, double r) const;
+  float height(const Drop &drop, float r) const;
   Point drawPosition() const;
-  bool shouldDrop(double drop_probability) const;
+  bool shouldDrop(float drop_probability) const;
   Drop drop(unsigned int time) const;
 };
 

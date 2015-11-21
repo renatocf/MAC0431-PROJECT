@@ -47,7 +47,7 @@ Lake::Lake(const Dimension &lake_dimension,
 /*----------------------------------------------------------------------------*/
 
 void Lake::rainFor(unsigned int total_time,
-                   double drop_probability) {
+                   float drop_probability) {
 # pragma omp parallel for schedule(dynamic, 100)
   for (unsigned int t = 0; t < total_time; t++)
     if (shouldDrop(drop_probability))
@@ -60,7 +60,7 @@ void Lake::printPGM(std::ostream &os) const {
   os << "P3" << std::endl;
   os << matrix_.cols() << " " << matrix_.rows() << std::endl;
 
-  double delta
+  float delta
     = (max_height_ > -max_depth_) ? max_height_/255 : -max_depth_/255;
 
   for (unsigned int j = 0; j < matrix_.cols(); j++) {
@@ -84,8 +84,8 @@ void Lake::ripple(const Drop &/* drop */, unsigned int /* total_time */) {
 
 /*----------------------------------------------------------------------------*/
 
-inline double Lake::height(const Drop &drop, double r) const {
-  double distance = r - wave_properties_.speed() * drop.time();
+inline float Lake::height(const Drop &drop, float r) const {
+  float distance = r - wave_properties_.speed() * drop.time();
   return distance / std::exp(distance*distance + drop.time()/10);
 }
 
@@ -97,7 +97,7 @@ inline Point Lake::drawPosition() const {
 
 /*----------------------------------------------------------------------------*/
 
-inline bool Lake::shouldDrop(double drop_probability) const {
+inline bool Lake::shouldDrop(float drop_probability) const {
   return probability_generator_(rng_) < drop_probability;
 }
 

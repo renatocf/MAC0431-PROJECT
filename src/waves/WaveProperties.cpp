@@ -23,7 +23,7 @@ namespace waves {
 /*                                CONSTRUCTORS                                */
 /*----------------------------------------------------------------------------*/
 
-WaveProperties::WaveProperties(double speed, double error)
+WaveProperties::WaveProperties(float speed, float error)
   : speed_(speed), error_(error) {
 }
 
@@ -31,13 +31,13 @@ WaveProperties::WaveProperties(double speed, double error)
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-double WaveProperties::speed() const {
+float WaveProperties::speed() const {
   return speed_;
 }
 
 /*----------------------------------------------------------------------------*/
 
-double WaveProperties::error() const {
+float WaveProperties::error() const {
   return error_;
 }
 

@@ -29,7 +29,7 @@ namespace waves {
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-std::vector<Point> CircleBuilder::createCircle(Point origin, double radius) {
+std::vector<Point> CircleBuilder::createCircle(Point origin, float radius) {
   std::vector<Point> points;
   createInitialPoints(points, radius);
   unfoldPoints(points);
@@ -41,8 +41,8 @@ std::vector<Point> CircleBuilder::createCircle(Point origin, double radius) {
 /*----------------------------------------------------------------------------*/
 
 void CircleBuilder::createInitialPoints(std::vector<Point>& points,
-                                        double radius) {
-  double minCoordinate = radius*sqrt(2)/2;
+                                        float radius) {
+  float minCoordinate = radius*sqrt(2)/2;
   int iMin = floor(minCoordinate);
   int jMax = ceil(minCoordinate);
   for (int i = iMin; i <= radius+1; i++)
@@ -109,7 +109,7 @@ void CircleBuilder::addOpposedHorizontalPoints(std::vector<Point>& points) {
 
 /*----------------------------------------------------------------------------*/
 
-double CircleBuilder::distance(Point point) {
+float CircleBuilder::distance(Point point) {
   auto a = point.first;
   auto b = point.second;
   nRoot_++;

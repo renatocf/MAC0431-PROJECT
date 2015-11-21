@@ -22,16 +22,16 @@ namespace waves {
 struct WaveProperties {
  public:
   // Constructors
-  WaveProperties(double speed, double error);
+  WaveProperties(float speed, float error);
 
   // Concrete methods
-  double speed() const;
-  double error() const;
+  float speed() const;
+  float error() const;
 
  private:
   // Instance variables
-  double speed_;
-  double error_;
+  float speed_;
+  float error_;
 };
 
 }  // namespace waves

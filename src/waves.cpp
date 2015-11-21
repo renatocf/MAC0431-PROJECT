@@ -47,10 +47,10 @@ int main(int argc, char **argv) {
   waves::Dimension lake_dimensions;
   waves::Dimension matrix_dimensions;
   unsigned int time;
-  double speed;
-  double height_error;
+  float speed;
+  float height_error;
   unsigned int num_iterations;
-  double drop_porcentage;
+  float drop_porcentage;
   unsigned int seed;
 
   std::ifstream input(input_file);

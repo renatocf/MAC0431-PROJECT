@@ -29,12 +29,12 @@ namespace waves {
 class CircleBuilder {
  public:
   // Concrete methods
-  std::vector<Point> createCircle(Point origin, double radius);
+  std::vector<Point> createCircle(Point origin, float radius);
 
  private:
   // Instance variables
   int nRoot_ = 0;
-  std::map<Point, double> distanceTable_;
+  std::map<Point, float> distanceTable_;
 
   // Concrete methods
   void unfoldPoints(std::vector<Point>& points);
@@ -43,8 +43,8 @@ class CircleBuilder {
   void addOffset(std::vector<Point>& points, Point offset);
   void addOpposedVerticalPoints(std::vector<Point>& points);
   void addOpposedHorizontalPoints(std::vector<Point>& points);
-  void createInitialPoints(std::vector<Point>& points, double radius);
-  double distance(Point point);
+  void createInitialPoints(std::vector<Point>& points, float radius);
+  float distance(Point point);
 };
 
 }  // namespace waves
