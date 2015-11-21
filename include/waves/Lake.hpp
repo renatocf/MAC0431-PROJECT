@@ -48,7 +48,7 @@ class Lake {
                 unsigned int seed = 42);
 
   // Concrete methods
-  void rainFor(unsigned int time, float drop_probability);
+  void rainFor(unsigned int time, unsigned int steps, float drop_probability);
   void printPGM(std::ostream &os) const;
   void printStatisticsTable(std::ostream &os) const;
 
@@ -67,11 +67,11 @@ class Lake {
   float max_depth_ = 0, max_height_ = 0;
 
   // Concrete methods
-  void ripple(const Drop &drop, unsigned int timestamp);
-  void rippleSnapshot(const Drop &drop, unsigned int timestamp);
+  void ripple(const Drop &drop, unsigned int timestep);
+  void rippleSnapshot(const Drop &drop, unsigned int timestep);
 
   float height(const Drop &drop, unsigned int radius) const;
-  float radius(const Drop &drop, unsigned int timestamp) const;
+  float radius(const Drop &drop, unsigned int timestep) const;
 
   std::vector<Point>
   affected_points(const Drop &drop, unsigned int radius) const;

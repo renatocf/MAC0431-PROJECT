@@ -49,24 +49,25 @@ Lake::Lake(const Dimension &lake_dimension,
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-void Lake::rainFor(unsigned int total_time,
+void Lake::rainFor(unsigned int time,
+                   unsigned int steps,
                    float drop_probability) {
-  // WARNING: Operations not (yet) thread-safe
-  drops_.reserve(total_time);
+  // Reserve space to avoid multiple allocations
+  drops_.reserve(steps);
 
   #pragma omp parallel for schedule(static)
-  for (unsigned int t = 0; t < total_time; t++)
+  for (unsigned int t = 0; t < steps; t++)
     if (shouldDrop(drop_probability))
-      drops_.push_back(createDrop(t));
+      drops_.push_back(createDrop(time/t));
 
-  // Timestamp: [0..total_time-1]
-  for (unsigned int t = 0; t < total_time-1; t++)
+  // timestep: [0..total_time-1]
+  for (unsigned int t = 0; t < steps-1; t++)
     for (unsigned int id = 0; id < drops_.size(); id++)
-      ripple(drops_[id], t);
+      ripple(drops_[id], time/t);
 
-  // Timestamp: total_time
+  // timestep: total_time
   for (unsigned int id = 0; id < drops_.size(); id++)
-    rippleSnapshot(drops_[id], total_time);
+    rippleSnapshot(drops_[id], time/steps);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -100,8 +101,8 @@ void Lake::printStatisticsTable(std::ostream &/* os */) const {
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::ripple(const Drop &drop, unsigned int timestamp) {
-  auto r = radius(drop, timestamp);
+void Lake::ripple(const Drop &drop, unsigned int timestep) {
+  auto r = radius(drop, timestep);
   auto h = height(drop, r);
   auto points = affected_points(drop, r);
 
@@ -115,8 +116,8 @@ void Lake::ripple(const Drop &drop, unsigned int timestamp) {
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::rippleSnapshot(const Drop &drop, unsigned int timestamp) {
-  auto r = radius(drop, timestamp);
+void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
+  auto r = radius(drop, timestep);
   auto h = height(drop, r);
   auto points = affected_points(drop, r);
 
@@ -138,8 +139,8 @@ inline float Lake::height(const Drop &drop, unsigned int radius) const {
 
 /*----------------------------------------------------------------------------*/
 
-inline float Lake::radius(const Drop &drop, unsigned int timestamp) const {
-  return wave_properties_.speed() * (timestamp - drop.time());
+inline float Lake::radius(const Drop &drop, unsigned int timestep) const {
+  return wave_properties_.speed() * (timestep - drop.time());
 }
 
 /*----------------------------------------------------------------------------*/

@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   unsigned int time;
   float speed;
   float height_error;
-  unsigned int num_iterations;
+  unsigned int steps;
   float drop_porcentage;
   unsigned int seed;
 
@@ -60,14 +60,14 @@ int main(int argc, char **argv) {
   input >> time;
   input >> speed;
   input >> height_error;
-  input >> num_iterations;
+  input >> steps;
   input >> drop_porcentage;
   input >> seed;
 
   waves::WaveProperties wave_properties(speed, height_error);
 
   waves::Lake lake(lake_dimensions, matrix_dimensions, wave_properties, seed);
-  lake.rainFor(num_iterations, drop_porcentage/100);
+  lake.rainFor(time, steps, drop_porcentage/100);
   // lake.printPGM(std::cout);
 
   return EXIT_SUCCESS;
