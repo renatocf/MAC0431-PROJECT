@@ -29,12 +29,12 @@ namespace waves {
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-std::vector<Point> CircleBuilder::createCircle(Point origin, float radius) {
+std::vector<Point> CircleBuilder::createCircle(float radius) {
   std::vector<Point> points;
   createInitialPoints(points, radius);
   unfoldPoints(points);
-  addOffset(points, origin);
-  removeExcess(points);
+  //addOffset(points, origin);
+  //removeExcess(points);
   return points;
 }
 

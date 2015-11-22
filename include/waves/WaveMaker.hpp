@@ -14,39 +14,30 @@
 // limitations under the License.                                             //
 //****************************************************************************//
 
-#ifndef WAVES_WAVES_CIRCLE_BUILDER_
-#define WAVES_WAVES_CIRCLE_BUILDER_
+#ifndef HPP_WAVES_WAVEMAKER_DEFINED
+#define HPP_WAVES_WAVEMAKER_DEFINED
 
 // Standard headers
 #include <map>
-#include <vector>
 
 // Waves headers
 #include "waves/Point.hpp"
+#include "waves/Drop.hpp"
 
-namespace waves {
+namespace waves 
+{
+class WaveMaker
+{
 
-class CircleBuilder {
  public:
+  // Constructors
+  explicit WaveMaker(float error);
   // Concrete methods
-  std::vector<Point> createCircle(float radius);
-  void removeExcess(std::vector<Point>& points);
-  void addOffset(std::vector<Point>& points, Point offset);
-
+  std::map<Point, float> makeWave(Drop& drop, unsigned int radius);
  private:
   // Instance variables
-  int nRoot_ = 0;
-  std::map<Point, float> distanceTable_;
-
-  // Concrete methods
-  void unfoldPoints(std::vector<Point>& points);
-  void addInvertedPoints(std::vector<Point>& points);
-  void addOpposedVerticalPoints(std::vector<Point>& points);
-  void addOpposedHorizontalPoints(std::vector<Point>& points);
-  void createInitialPoints(std::vector<Point>& points, float radius);
-  float distance(Point point);
+  float error_;
 };
+}
 
-}  // namespace waves
-
-#endif  // WAVES_WAVES_CIRCLE_BUILDER_
+#endif
