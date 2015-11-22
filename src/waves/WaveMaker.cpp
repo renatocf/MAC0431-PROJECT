@@ -19,7 +19,6 @@
 #include <iostream>
 
 // Waves headers
-#include "waves/CircleBuilder.hpp"
 #include "waves/WaveMaker.hpp"
 #include "waves/Drop.hpp"
 
@@ -30,50 +29,43 @@ namespace waves{
   /*                                CONSTRUCTORS                                */
   /*----------------------------------------------------------------------------*/
 
-  WaveMaker::WaveMaker(float error) : error_(error){}
+  WaveMaker::WaveMaker(float error) : square_error_(error*error){}
 
   /*----------------------------------------------------------------------------*/
   /*                              CONCRETE METHODS                              */
   /*----------------------------------------------------------------------------*/
 
-  std::map<Point, float> WaveMaker::makeWave(Drop& drop, unsigned int radius){
-    std::map<Point, float> map;
-    std::vector<std::vector<Point>> points;
-    CircleBuilder builder;
-    float actualRadius = radius;
-    float actualHeigth = drop.height(actualRadius);
-    
-    points.push_back(builder.createCircle(actualRadius));
-    actualRadius++;
-    actualHeigth = drop.height(actualRadius);
-    std::cout << "height: " << actualHeigth << std::endl;
-    
-    while(actualHeigth*actualHeigth >= error_*error_){
-      points.push_back(builder.createCircle(actualRadius));
+  std::map<float, std::vector<Point>> WaveMaker::makeWave(Drop& drop, unsigned int radius, unsigned int timestep, Lake& lake){
+    std::map<float, std::vector<Point>> map;
+    unsigned int actualRadius = radius;
+    float actualHeigth = lake.height(drop, actualRadius, timestep);
+
+    do {
+      map[actualHeigth] = getCircle(actualRadius);
       actualRadius++;
-      actualHeigth = drop.height(actualRadius);
-      std::cout << "height: " << actualHeigth << std::endl;
-    }
+      actualHeigth = lake.height(drop, actualRadius, timestep);
+    } while(actualHeigth*actualHeigth >= square_error_);
 
-    actualRadius = radius - 1;
-    actualHeigth = drop.height(actualRadius);
-    std::cout << "height: " << actualHeigth << std::endl;
-    while(actualHeigth*actualHeigth >= error_*error_){
-      points.push_back(builder.createCircle(actualRadius));
+    actualRadius = radius -1;
+    actualHeigth = lake.height(drop, actualRadius, timestep);
+
+    while(actualHeigth*actualHeigth >= square_error_ && actualRadius > 0){
+      map[actualHeigth] = getCircle(actualRadius);
       actualRadius--;
-      actualHeigth = drop.height(actualRadius);
-      std::cout << "height: " << actualHeigth << std::endl;
-    }
-
-
-    for (auto pointVector : points){
-      std::cout << "------" << std::endl; 
-      for (auto point : pointVector){
-        std::cout << point.first << ", " << point.second << std::endl;  
-      }
-    }
+      actualHeigth = lake.height(drop, actualRadius, timestep);
+    };
 
     return map;
+  }
+
+  std::vector<Point> WaveMaker::getCircle(unsigned int radius){
+    auto it = circle_cache_.find(radius);
+    if (it != circle_cache_.end()){
+      return (*it).second;
+    }
+
+    circle_cache_[radius] = builder_.createCircle(radius);
+    return circle_cache_[radius];
   }
 
 }

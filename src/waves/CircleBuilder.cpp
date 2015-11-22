@@ -112,20 +112,7 @@ void CircleBuilder::addOpposedHorizontalPoints(std::vector<Point>& points) {
 float CircleBuilder::distance(Point point) {
   auto a = point.first;
   auto b = point.second;
-  nRoot_++;
   return sqrt(a*a + b*b);
-
-  /*auto it = distanceTable_.find(point);
-  if (it != distanceTable_.end())
-    return (*it).second;
-
-  auto a = point.first;
-  auto b = point.second;
-  auto distance = sqrt(a*a + b*b);
-  distanceTable_[point] = distance;
-  nRoot_++;
-  return distance;
-  */
 }
 
 /*----------------------------------------------------------------------------*/

@@ -34,10 +34,6 @@ class CircleBuilder {
   void addOffset(std::vector<Point>& points, Point offset);
 
  private:
-  // Instance variables
-  int nRoot_ = 0;
-  std::map<Point, float> distanceTable_;
-
   // Concrete methods
   void unfoldPoints(std::vector<Point>& points);
   void addInvertedPoints(std::vector<Point>& points);

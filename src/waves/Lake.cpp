@@ -103,8 +103,8 @@ void Lake::printStatisticsTable(std::ostream &/* os */) const {
 
 void Lake::ripple(const Drop &drop, unsigned int timestep) {
   auto r = radius(drop, timestep);
-  auto h = height(drop, r);
-  auto points = affected_points(drop, r);
+  auto h = height(drop, r, timestep);
+  auto points = affected_points(drop, r, timestep);
 
   #pragma omp parallel for schedule(static)
   for (unsigned int k = 0; k < points.size(); k++) {
@@ -118,8 +118,8 @@ void Lake::ripple(const Drop &drop, unsigned int timestep) {
 
 void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
   auto r = radius(drop, timestep);
-  auto h = height(drop, r);
-  auto points = affected_points(drop, r);
+  auto h = height(drop, r, timestep);
+  auto points = affected_points(drop, r, timestep);
 
   #pragma omp parallel for schedule(static)
   for (unsigned int k = 0; k < points.size(); k++) {
@@ -132,8 +132,8 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
 
 /*----------------------------------------------------------------------------*/
 
-inline float Lake::height(const Drop &drop, unsigned int radius) const {
-  float distance = radius - wave_properties_.speed() * drop.time();
+float Lake::height(const Drop &drop, unsigned int radius, unsigned int timestep) const {
+  float distance = radius - wave_properties_.speed() * (timestep - drop.time());
   return distance / std::exp(distance*distance + drop.time()/10);
 }
 
@@ -146,7 +146,7 @@ inline float Lake::radius(const Drop &drop, unsigned int timestep) const {
 /*----------------------------------------------------------------------------*/
 
 inline std::vector<Point>
-Lake::affected_points(const Drop &/* drop */, unsigned int /* radius */) const {
+Lake::affected_points(const Drop &/* drop */, unsigned int /* radius */, unsigned int /*timestep*/) const {
   // TODO(dhinihan): Given a drop, return all points affected by that drop
   //                 with a wave whose center is in radius.
 

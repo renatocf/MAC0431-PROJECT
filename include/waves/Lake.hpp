@@ -51,6 +51,7 @@ class Lake {
   void rainFor(unsigned int time, unsigned int steps, float drop_probability);
   void printPGM(std::ostream &os) const;
   void printStatisticsTable(std::ostream &os) const;
+  float height(const Drop &drop, unsigned int radius, unsigned int timestep) const;
 
  private:
   // Instance variables
@@ -70,11 +71,10 @@ class Lake {
   void ripple(const Drop &drop, unsigned int timestep);
   void rippleSnapshot(const Drop &drop, unsigned int timestep);
 
-  float height(const Drop &drop, unsigned int radius) const;
   float radius(const Drop &drop, unsigned int timestep) const;
 
   std::vector<Point>
-  affected_points(const Drop &drop, unsigned int radius) const;
+  affected_points(const Drop &drop, unsigned int radius, unsigned int timestep) const;
 
   void updateMean(unsigned int i, unsigned int j, float height);
   void updateHeight(unsigned int i, unsigned int j, float height);
