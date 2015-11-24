@@ -21,18 +21,18 @@
 #include <map>
 
 // Waves headers
-#include "waves/Lake.hpp"
 #include "waves/Point.hpp"
 #include "waves/Drop.hpp"
 #include "waves/CircleBuilder.hpp"
 
 namespace waves 
 {
+class Lake;
 class WaveMaker
 {
  public:
   // Concrete methods
-  std::map<float, std::vector<Point>> makeWave(Drop& drop, unsigned int radius, unsigned int timestep, Lake& lake);
+  std::map<float, std::vector<Point>> makeWave(const Drop& drop, unsigned int radius, unsigned int timestep, Lake* lake);
  private:
   // Instance variables
   std::map<unsigned int, std::vector<Point>> circle_cache_;
@@ -40,7 +40,7 @@ class WaveMaker
   float square_error_;
   // Concrete methods
   std::vector<Point> getCircle(unsigned int radius);
-  std::vector<Point> makeCircle(unsigned int radius, Drop& drop, Dimension& sizes);
+  std::vector<Point> makeCircle(unsigned int radius, const Drop& drop, Dimension& sizes);
 };
 }
 

@@ -97,13 +97,13 @@ void Lake::printPGM(std::ostream &os) const {
 
 /*----------------------------------------------------------------------------*/
 
-Dimension Lake::dimension(){
+Dimension Lake::dimension() const{
   return Dimension(width_, length_);
 }
 
 /*----------------------------------------------------------------------------*/
 
-WaveProperties& Lake::wave_properties(){
+WaveProperties Lake::wave_properties() const{
   return wave_properties_;
 }
 
@@ -119,14 +119,15 @@ void Lake::printStatisticsTable(std::ostream &/* os */) const {
 
 void Lake::ripple(const Drop &drop, unsigned int timestep) {
   auto r = radius(drop, timestep);
-  auto h = height(drop, r, timestep);
-  auto points = affected_points(drop, r, timestep);
+  auto point_map = affected_points(drop, r, timestep);
 
-  #pragma omp parallel for schedule(static)
-  for (unsigned int k = 0; k < points.size(); k++) {
-    // TODO(dhinihan): Calculate distance of each point to drop
-    updateMean(points[k].first, points[k].second, h);
-    updateVariance(points[k].first, points[k].second, h);
+  for(auto association : point_map){
+    auto h = association.first;
+    #pragma omp parallel for schedule(static)
+    for (unsigned int k = 0; k < association.second.size(); k++) {
+      updateMean(association.second[k].first, association.second[k].second, h);
+      updateVariance(association.second[k].first, association.second[k].second, h);
+    }
   }
 }
 
@@ -134,15 +135,16 @@ void Lake::ripple(const Drop &drop, unsigned int timestep) {
 
 void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
   auto r = radius(drop, timestep);
-  auto h = height(drop, r, timestep);
-  auto points = affected_points(drop, r, timestep);
+  auto point_map = affected_points(drop, r, timestep);
 
-  #pragma omp parallel for schedule(static)
-  for (unsigned int k = 0; k < points.size(); k++) {
-    // TODO(dhinihan): Calculate distance of each point to drop
-    updateMean(points[k].first, points[k].second, h);
-    updateHeight(points[k].first, points[k].second, h);
-    updateVariance(points[k].first, points[k].second, h);
+  for(auto association : point_map){
+    auto h = association.first;
+    #pragma omp parallel for schedule(static)
+    for (unsigned int k = 0; k < association.second.size(); k++) {
+      updateMean(association.second[k].first, association.second[k].second, h);
+      updateHeight(association.second[k].first, association.second[k].second, h);
+      updateVariance(association.second[k].first, association.second[k].second, h);
+    }
   }
 }
 
@@ -161,12 +163,9 @@ inline float Lake::radius(const Drop &drop, unsigned int timestep) const {
 
 /*----------------------------------------------------------------------------*/
 
-inline std::vector<Point>
-Lake::affected_points(const Drop &/* drop */, unsigned int /* radius */, unsigned int /*timestep*/) const {
-  // TODO(dhinihan): Given a drop, return all points affected by that drop
-  //                 with a wave whose center is in radius.
-
-  return std::vector<Point>{};
+inline std::map<float, std::vector<Point>>
+Lake::affected_points(const Drop& drop, unsigned int radius, unsigned int timestep){
+  return wave_maker_.makeWave(drop, radius, timestep, this);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -228,7 +227,7 @@ void Lake::animationExample() {
     waves::WaveProperties props(speed,error);
     waves::Lake lake(waves::Dimension(100,100), props, 37);
 
-    auto map = maker.makeWave(drop, radius, timestep, lake);
+    auto map = maker.makeWave(drop, radius, timestep, &lake);
 
     char matrix[100][100];
 

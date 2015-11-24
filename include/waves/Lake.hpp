@@ -29,6 +29,7 @@
 #include "waves/Drop.hpp"
 #include "waves/Dimension.hpp"
 #include "waves/WaveProperties.hpp"
+#include "waves/WaveMaker.hpp"
 
 namespace waves {
 
@@ -52,8 +53,8 @@ class Lake {
   void printPGM(std::ostream &os) const;
   void printStatisticsTable(std::ostream &os) const;
   float height(const Drop &drop, unsigned int radius, unsigned int timestep) const;
-  WaveProperties& wave_properties();
-  Dimension dimension();
+  WaveProperties wave_properties() const;
+  Dimension dimension() const;
   static void animationExample();
 
  private:
@@ -62,6 +63,7 @@ class Lake {
   Matrix height_, mean_, variance_;
   WaveProperties wave_properties_;
   std::vector<Drop> drops_;
+  WaveMaker wave_maker_;
 
   mutable sitmo::prng_engine rng_;
   mutable std::uniform_int_distribution<unsigned int> row_distribution_;
@@ -76,8 +78,8 @@ class Lake {
 
   float radius(const Drop &drop, unsigned int timestep) const;
 
-  std::vector<Point>
-  affected_points(const Drop &drop, unsigned int radius, unsigned int timestep) const;
+  std::map<float, std::vector<Point>>
+  affected_points(const Drop &drop, unsigned int radius, unsigned int timestep);
 
   void updateMean(unsigned int i, unsigned int j, float height);
   void updateHeight(unsigned int i, unsigned int j, float height);
