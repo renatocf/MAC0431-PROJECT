@@ -52,6 +52,9 @@ class Lake {
   void printPGM(std::ostream &os) const;
   void printStatisticsTable(std::ostream &os) const;
   float height(const Drop &drop, unsigned int radius, unsigned int timestep) const;
+  WaveProperties& wave_properties();
+  Dimension dimension();
+  static void animationExample();
 
  private:
   // Instance variables

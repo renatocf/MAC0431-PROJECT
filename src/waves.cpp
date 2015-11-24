@@ -16,6 +16,7 @@
 
 // C headers
 #include <omp.h>
+#include <unistd.h>
 
 // Standard headers
 #include <array>
@@ -30,6 +31,7 @@
 #include "waves/Lake.hpp"
 #include "waves/Dimension.hpp"
 #include "waves/WaveProperties.hpp"
+#include "waves/WaveMaker.hpp"
 
 int main(int argc, char **argv) {
   if (argc != 2 && argc != 3) {

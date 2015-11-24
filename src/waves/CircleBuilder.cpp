@@ -61,10 +61,10 @@ void CircleBuilder::unfoldPoints(std::vector<Point>& points) {
 
 /*----------------------------------------------------------------------------*/
 
-void CircleBuilder::removeExcess(std::vector<Point>& points) {
+void CircleBuilder::removeExcess(std::vector<Point>& points, Dimension& sizes) {
   auto it = points.begin();
   while (it != points.end()) {
-    if (it->first < 0 || it->second < 0)
+    if (outOfBounds(*it, sizes))
       it = points.erase(it);
     else
       ++it;
@@ -113,6 +113,17 @@ float CircleBuilder::distance(Point point) {
   auto a = point.first;
   auto b = point.second;
   return sqrt(a*a + b*b);
+}
+
+/*----------------------------------------------------------------------------*/
+
+float CircleBuilder::outOfBounds(Point& point, Dimension& sizes) {
+  bool condition = false;
+  condition = condition || point.first < 0;
+  condition = condition || point.second < 0;
+  condition = condition || point.first >= (int) sizes.length();
+  condition = condition || point.second >= (int) sizes.width();
+  return condition;
 }
 
 /*----------------------------------------------------------------------------*/

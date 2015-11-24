@@ -14,11 +14,15 @@
 // limitations under the License.                                             //
 //****************************************************************************//
 
+// C headers
+#include <unistd.h>
+
 // Standard headers
 #include <vector>
 
 // Waves headers
 #include "waves/Lake.hpp"
+#include "waves/WaveMaker.hpp"
 
 namespace waves {
 
@@ -89,6 +93,18 @@ void Lake::printPGM(std::ostream &os) const {
         os << "0 0 " << h/delta << std::endl;
     }
   }
+}
+
+/*----------------------------------------------------------------------------*/
+
+Dimension Lake::dimension(){
+  return Dimension(width_, length_);
+}
+
+/*----------------------------------------------------------------------------*/
+
+WaveProperties& Lake::wave_properties(){
+  return wave_properties_;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -198,5 +214,44 @@ inline bool Lake::shouldDrop(float drop_probability) const {
 }
 
 /*----------------------------------------------------------------------------*/
+
+void Lake::animationExample() {
+  waves::WaveMaker maker;
+  for(int timestep = 10; timestep < 100; timestep++){
+
+    float speed = 1.5;
+    float error = 0.001;
+    unsigned int radius = (timestep - 10) * speed;
+    
+    waves::Drop drop(10, waves::Point(30,17));
+
+    waves::WaveProperties props(speed,error);
+    waves::Lake lake(waves::Dimension(100,100), props, 37);
+
+    auto map = maker.makeWave(drop, radius, timestep, lake);
+
+    char matrix[100][100];
+
+    for(int i = 0; i < 100; i ++)
+      for(int j = 0; j < 100; j ++)
+        matrix[i][j] = ' ';
+
+    char valor = '1';
+    
+    for(auto assoc : map){
+      for(auto point : assoc.second){
+        matrix[point.first][point.second] = valor;
+      }
+      valor++;
+    }
+      
+    for(int i = 0; i < 100; i ++){
+      for(int j = 0; j < 100; j ++)
+        std::cout << matrix[i][j];
+      std::cout << std::endl;
+    }
+    usleep(100000);
+  }
+}
 
 }  // namespace waves

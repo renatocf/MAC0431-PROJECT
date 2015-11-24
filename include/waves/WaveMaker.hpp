@@ -31,8 +31,6 @@ namespace waves
 class WaveMaker
 {
  public:
-  // Constructors
-  explicit WaveMaker(float error);
   // Concrete methods
   std::map<float, std::vector<Point>> makeWave(Drop& drop, unsigned int radius, unsigned int timestep, Lake& lake);
  private:
@@ -42,6 +40,7 @@ class WaveMaker
   float square_error_;
   // Concrete methods
   std::vector<Point> getCircle(unsigned int radius);
+  std::vector<Point> makeCircle(unsigned int radius, Drop& drop, Dimension& sizes);
 };
 }
 
