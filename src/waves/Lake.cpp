@@ -164,16 +164,15 @@ void Lake::printStatisticsTable(std::ostream &/* os */) const {
 /*----------------------------------------------------------------------------*/
 
 void Lake::ripple(const Drop &drop, unsigned int timestep) {
-  auto r = radius(drop, timestep);
-  auto point_map = affected_points(drop, r, timestep);
+  auto point_map = affected_points(drop, radius(drop, timestep), timestep);
 
-  for (auto association : point_map) {
-    const auto& height = association.first;
-    const auto& point = association.second;
+  for (const auto &association : point_map) {
+    const auto &height = association.first;
+    const auto &points = association.second;
     #pragma omp parallel for schedule(static)
-    for (unsigned int k = 0; k < association.second.size(); k++) {
-      updateMean(point[k].first, point[k].second, height);
-      updateVariance(point[k].first, point[k].second, height);
+    for (unsigned int k = 0; k < points.size(); k++) {
+      updateMean(points[k].first, points[k].second, height);
+      updateVariance(points[k].first, points[k].second, height);
     }
   }
 }
@@ -181,17 +180,16 @@ void Lake::ripple(const Drop &drop, unsigned int timestep) {
 /*----------------------------------------------------------------------------*/
 
 void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
-  auto r = radius(drop, timestep);
-  auto point_map = affected_points(drop, r, timestep);
+  auto point_map = affected_points(drop, radius(drop, timestep), timestep);
 
-  for (auto association : point_map) {
-    const auto& height = association.first;
-    const auto& point = association.second;
+  for (const auto &association : point_map) {
+    const auto &height = association.first;
+    const auto &points = association.second;
     #pragma omp parallel for schedule(static)
-    for (unsigned int k = 0; k < association.second.size(); k++) {
-      updateMean(point[k].first, point[k].second, height);
-      updateHeight(point[k].first, point[k].second, height);
-      updateVariance(point[k].first, point[k].second, height);
+    for (unsigned int k = 0; k < points.size(); k++) {
+      updateMean(points[k].first, points[k].second, height);
+      updateHeight(points[k].first, points[k].second, height);
+      updateVariance(points[k].first, points[k].second, height);
     }
   }
 }
@@ -201,8 +199,7 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
 float Lake::height(const Drop &drop,
                    unsigned int radius,
                    unsigned int timestep) const {
-  float distance
-    = radius - wave_properties_.speed() * (timestep - drop.time());
+  float distance = radius - wave_properties_.speed() * (timestep - drop.time());
   return distance / std::exp(distance*distance + drop.time()/10);
 }
 
