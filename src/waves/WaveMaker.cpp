@@ -46,12 +46,12 @@ std::map<float, std::vector<Point>> WaveMaker::makeWave(const Drop& drop,
     map[actualHeigth] = makeCircle(actualRadius, drop, sizes);
     actualRadius++;
     actualHeigth = lake->height(drop, actualRadius, timestep);
-  } while (actualHeigth*actualHeigth >= square_error);
+  } while (actualHeigth * actualHeigth >= square_error);
 
   actualRadius = radius -1;
   actualHeigth = lake->height(drop, actualRadius, timestep);
 
-  while (actualHeigth*actualHeigth >= square_error && actualRadius > 0) {
+  while (actualHeigth * actualHeigth >= square_error && actualRadius > 0) {
     map[actualHeigth] = makeCircle(actualRadius, drop, sizes);
     actualRadius--;
     actualHeigth = lake->height(drop, actualRadius, timestep);
