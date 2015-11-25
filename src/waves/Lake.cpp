@@ -99,22 +99,24 @@ Lake::Lake(const Dimension &lake_dimension,
 void Lake::rainFor(unsigned int time,
                    unsigned int steps,
                    float drop_probability) {
+  float timeunit = time/steps;
+
   // Reserve space to avoid multiple allocations
   drops_.reserve(steps);
 
   #pragma omp parallel for schedule(static)
   for (unsigned int t = 0; t < steps; t++)
     if (shouldDrop(drop_probability))
-      drops_.push_back(createDrop(time/t));
+      drops_.push_back(createDrop(t * timeunit));
 
   // timestep: [0..total_time-1]
   for (unsigned int t = 0; t < steps-1; t++)
     for (unsigned int id = 0; id < drops_.size(); id++)
-      ripple(drops_[id], time/t);
+      ripple(drops_[id], t * timeunit);
 
   // timestep: total_time
   for (unsigned int id = 0; id < drops_.size(); id++)
-    rippleSnapshot(drops_[id], time/steps);
+    rippleSnapshot(drops_[id], timeunit);
 }
 
 /*----------------------------------------------------------------------------*/
