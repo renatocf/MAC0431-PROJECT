@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 
   waves::Lake lake(lake_dimensions, matrix_dimensions, wave_properties, seed);
   lake.rainFor(time, steps, drop_porcentage/100);
-  // lake.printPGM(std::cout);
+  lake.printPPM(std::cout);
 
   return EXIT_SUCCESS;
 }

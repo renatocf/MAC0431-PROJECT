@@ -121,22 +121,23 @@ void Lake::rainFor(unsigned int time,
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::printPGM(std::ostream &os) const {
-  os << "P3" << std::endl;
-  os << height_.cols() << " " << height_.rows() << std::endl;
+void Lake::printPPM(std::ostream &os) const {
+  os << "P3" << height_.cols() << " " << height_.rows() << " 255" << std::endl;
 
   float delta
     = (max_height_ > -max_depth_) ? max_height_/255 : -max_depth_/255;
 
   for (unsigned int j = 0; j < height_.cols(); j++) {
     for (unsigned int i = 0; i < height_.rows(); i++) {
-      int h = height_(i, j);
-      os << "(" << i << "," << j << "): " << std::endl;
+      float h = height_(i, j);
+      int height_color = static_cast<int>(h/delta + 0.5);
+
       if (h < 0)
-        os << h/delta << " 0 0" << std::endl;
+        os << height_color << " 0 0" << "\t";
       else
-        os << "0 0 " << h/delta << std::endl;
+        os << "0 0 " << height_color << "\t";
     }
+    os << std::endl;
   }
 }
 

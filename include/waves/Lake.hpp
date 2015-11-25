@@ -53,15 +53,16 @@ class Lake {
 
   // Concrete methods
   void rainFor(unsigned int time, unsigned int steps, float drop_probability);
-  void printPGM(std::ostream &os) const;
+
+  void printPPM(std::ostream &os) const;
   void printStatisticsTable(std::ostream &os) const;
 
   float height(const Drop &drop,
                unsigned int radius,
                unsigned int timestep) const;
 
-  WaveProperties wave_properties() const;
   Dimension dimension() const;
+  WaveProperties wave_properties() const;
 
  private:
   // Instance variables
