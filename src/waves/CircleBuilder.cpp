@@ -33,8 +33,8 @@ std::vector<Point> CircleBuilder::createCircle(float radius) {
   std::vector<Point> points;
   createInitialPoints(points, radius);
   unfoldPoints(points);
-  //addOffset(points, origin);
-  //removeExcess(points);
+  // addOffset(points, origin);
+  // removeExcess(points);
   return points;
 }
 
@@ -121,8 +121,8 @@ float CircleBuilder::outOfBounds(Point& point, Dimension& sizes) {
   bool condition = false;
   condition = condition || point.first < 0;
   condition = condition || point.second < 0;
-  condition = condition || point.first >= (int) sizes.length();
-  condition = condition || point.second >= (int) sizes.width();
+  condition = condition || point.first >= static_cast<int>(sizes.length());
+  condition = condition || point.second >= static_cast<int>(sizes.width());
   return condition;
 }
 

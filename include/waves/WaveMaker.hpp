@@ -14,34 +14,44 @@
 // limitations under the License.                                             //
 //****************************************************************************//
 
-#ifndef HPP_WAVES_WAVEMAKER_DEFINED
-#define HPP_WAVES_WAVEMAKER_DEFINED
+#ifndef WAVES_WAVE_MAKER_
+#define WAVES_WAVE_MAKER_
 
 // Standard headers
 #include <map>
+#include <vector>
 
 // Waves headers
 #include "waves/Point.hpp"
 #include "waves/Drop.hpp"
 #include "waves/CircleBuilder.hpp"
 
-namespace waves 
-{
+namespace waves {
+
+// Forward declaration
 class Lake;
-class WaveMaker
-{
+
+class WaveMaker {
  public:
   // Concrete methods
-  std::map<float, std::vector<Point>> makeWave(const Drop& drop, unsigned int radius, unsigned int timestep, Lake* lake);
+  std::map<float, std::vector<Point>> makeWave(const Drop& drop,
+                                               unsigned int radius,
+                                               unsigned int timestep,
+                                               Lake* lake);
+
  private:
   // Instance variables
   std::map<unsigned int, std::vector<Point>> circle_cache_;
   CircleBuilder builder_;
   float square_error_;
+
   // Concrete methods
   std::vector<Point> getCircle(unsigned int radius);
-  std::vector<Point> makeCircle(unsigned int radius, const Drop& drop, Dimension& sizes);
+  std::vector<Point> makeCircle(unsigned int radius,
+                                const Drop& drop,
+                                Dimension& sizes);
 };
-}
 
-#endif
+}  // namespace waves
+
+#endif  // WAVES_WAVE_MAKER_

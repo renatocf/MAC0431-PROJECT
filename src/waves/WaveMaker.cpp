@@ -16,6 +16,7 @@
 
 // Standard headers
 #include <map>
+#include <vector>
 #include <iostream>
 
 // Waves headers
@@ -23,60 +24,65 @@
 #include "waves/Drop.hpp"
 #include "waves/Lake.hpp"
 
+namespace waves {
 
-namespace waves{
+/*----------------------------------------------------------------------------*/
+/*                              CONCRETE METHODS                              */
+/*----------------------------------------------------------------------------*/
 
-  /*----------------------------------------------------------------------------*/
-  /*                              CONCRETE METHODS                              */
-  /*----------------------------------------------------------------------------*/
+std::map<float, std::vector<Point>> WaveMaker::makeWave(const Drop& drop,
+                                                        unsigned int radius,
+                                                        unsigned int timestep,
+                                                        Lake* lake) {
+  std::map<float, std::vector<Point>> map;
+  unsigned int actualRadius = radius;
+  Dimension sizes = lake->dimension();
+  float actualHeigth = lake->height(drop, actualRadius, timestep);
 
-  std::map<float, std::vector<Point>> WaveMaker::makeWave(const Drop& drop, unsigned int radius, unsigned int timestep, Lake* lake){
-    std::map<float, std::vector<Point>> map;
-    unsigned int actualRadius = radius;
-    Dimension sizes = lake->dimension();
-    float actualHeigth = lake->height(drop, actualRadius, timestep);
-    
-    float square_error = lake->wave_properties().error();
-    square_error *= square_error;
+  float square_error = lake->wave_properties().error();
+  square_error *= square_error;
 
-    do {
-      map[actualHeigth] = makeCircle(actualRadius, drop, sizes);
-      actualRadius++;
-      actualHeigth = lake->height(drop, actualRadius, timestep);
-    } while(actualHeigth*actualHeigth >= square_error);
-
-    actualRadius = radius -1;
+  do {
+    map[actualHeigth] = makeCircle(actualRadius, drop, sizes);
+    actualRadius++;
     actualHeigth = lake->height(drop, actualRadius, timestep);
+  } while (actualHeigth*actualHeigth >= square_error);
 
-    while(actualHeigth*actualHeigth >= square_error && actualRadius > 0){
-      map[actualHeigth] = makeCircle(actualRadius, drop, sizes);
-      actualRadius--;
-      actualHeigth = lake->height(drop, actualRadius, timestep);
-    };
+  actualRadius = radius -1;
+  actualHeigth = lake->height(drop, actualRadius, timestep);
 
-    return map;
+  while (actualHeigth*actualHeigth >= square_error && actualRadius > 0) {
+    map[actualHeigth] = makeCircle(actualRadius, drop, sizes);
+    actualRadius--;
+    actualHeigth = lake->height(drop, actualRadius, timestep);
   }
 
-  std::vector<Point> WaveMaker::getCircle(unsigned int radius){
-    auto it = circle_cache_.find(radius);
-    if (it != circle_cache_.end()){
-      return (*it).second;
-    }
-
-    circle_cache_[radius] = builder_.createCircle(radius);
-    return circle_cache_[radius];
-  }
-
-  std::vector<Point> WaveMaker::makeCircle(unsigned int radius,const Drop& drop, Dimension& sizes){
-    auto circle = getCircle(radius);
-    builder_.addOffset(circle, drop.position());
-    builder_.removeExcess(circle, sizes);
-    return circle;
-  }
-
-
-
+  return map;
 }
 
+/*----------------------------------------------------------------------------*/
 
+std::vector<Point> WaveMaker::getCircle(unsigned int radius) {
+  auto it = circle_cache_.find(radius);
+  if (it != circle_cache_.end()) {
+    return (*it).second;
+  }
 
+  circle_cache_[radius] = builder_.createCircle(radius);
+  return circle_cache_[radius];
+}
+
+/*----------------------------------------------------------------------------*/
+
+std::vector<Point> WaveMaker::makeCircle(unsigned int radius,
+                                         const Drop& drop,
+                                         Dimension& sizes) {
+  auto circle = getCircle(radius);
+  builder_.addOffset(circle, drop.position());
+  builder_.removeExcess(circle, sizes);
+  return circle;
+}
+
+/*----------------------------------------------------------------------------*/
+
+}  // namespace waves

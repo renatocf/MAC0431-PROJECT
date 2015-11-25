@@ -18,7 +18,7 @@
 #define WAVES_WAVES_LAKE_
 
 // Standard headers
-#include <atomic>
+#include <map>
 #include <vector>
 
 // External headers
@@ -38,6 +38,9 @@ class Lake {
   // Alias
   using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
 
+  // Static methods
+  static void animationExample();
+
   // Constructors
   explicit Lake(const Dimension &lake_dimension,
                 const WaveProperties &wave_properties,
@@ -52,10 +55,13 @@ class Lake {
   void rainFor(unsigned int time, unsigned int steps, float drop_probability);
   void printPGM(std::ostream &os) const;
   void printStatisticsTable(std::ostream &os) const;
-  float height(const Drop &drop, unsigned int radius, unsigned int timestep) const;
+
+  float height(const Drop &drop,
+               unsigned int radius,
+               unsigned int timestep) const;
+
   WaveProperties wave_properties() const;
   Dimension dimension() const;
-  static void animationExample();
 
  private:
   // Instance variables
