@@ -152,7 +152,15 @@ WaveProperties Lake::wave_properties() const {
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::printStatisticsTable(std::ostream &/* os */) const {
+void Lake::printStatisticsTable(std::ostream &os) const {
+	for (unsigned int j = 0; j < height_.cols(); j++) {
+	    for (unsigned int i = 0; i < height_.rows(); i++) {
+	     	int h = height_(i, j);
+	     	os << "(" << i << "," << j << "): " << std::endl;
+        os << "mean: " << setiosflags (ios::fixed) << setprecision(7) << mean_[i][j] << std::endl;
+        os << "standart deviation: " << setiosflags (ios::fixed) << setprecision(7) << sqrt(variance_[i][j]);
+	    }
+	}
   // TODO(erikaAkab): Print table with statistics for (x,y) lake positions
   //                  Print *mean* and *standard deviation* (sqrt of variance).
   //                  Use precition %12.7f
