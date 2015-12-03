@@ -89,7 +89,7 @@ Lake::Lake(const Dimension &lake_dimension,
     : width_(lake_dimension.width()), length_(lake_dimension.length()),
       height_(matrix_dimension.width(), matrix_dimension.length()),
       wave_properties_(wave_properties), rng_(seed),
-      row_distribution_(0, length_), column_distribution_(0, width_),
+      row_distribution_(0, width_), column_distribution_(0, length_),
       probability_distribution_(0.0, 1.0) {
 }
 
@@ -123,7 +123,7 @@ void Lake::rainFor(unsigned int time,
 /*----------------------------------------------------------------------------*/
 
 void Lake::printPPM(std::ostream &os) const {
-  os << "P3" << height_.cols() << " " << height_.rows() << " 255" << std::endl;
+  os << "P3" << height_.rows() << " " <<  height_.cols()<< " 255" << std::endl;
 
   float delta
     = (max_height_ > -max_depth_) ? max_height_/255 : -max_depth_/255;
@@ -145,7 +145,7 @@ void Lake::printPPM(std::ostream &os) const {
 /*----------------------------------------------------------------------------*/
 
 Dimension Lake::dimension() const {
-  return Dimension(width_, length_);
+  return Dimension(height_.cols(), height_.rows());
 }
 
 /*----------------------------------------------------------------------------*/
