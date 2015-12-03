@@ -20,6 +20,7 @@
 // Standard headers
 #include <map>
 #include <vector>
+#include <iomanip>
 
 // Waves headers
 #include "waves/Lake.hpp"
@@ -155,10 +156,22 @@ WaveProperties Lake::wave_properties() const {
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::printStatisticsTable(std::ostream &/* os */) const {
+void Lake::printStatisticsTable(std::ostream &os) const {
   // TODO(erikaAkab): Print table with statistics for (x,y) lake positions
   //                  Print *mean* and *standard deviation* (sqrt of variance).
   //                  Use precition %12.7f
+  for (unsigned int j = 0; j < height_.cols(); j++) {
+      for (unsigned int i = 0; i < height_.rows(); i++) {
+        int h = height_(i, j);
+        os << "(" << i << "," << j << "): " << std::endl;
+        os << "mean: "
+           << std::setiosflags(std::ios::fixed) << std::setprecision(7)
+           << mean_(i, j);
+        os << "standart deviation: "
+           << std::setiosflags(std::ios::fixed) << std::setprecision(7)
+           << std::sqrt(variance_(i, j)) << std::endl;
+      }
+  }
 }
 
 /*----------------------------------------------------------------------------*/
