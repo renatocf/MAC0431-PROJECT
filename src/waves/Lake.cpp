@@ -87,7 +87,8 @@ Lake::Lake(const Dimension &lake_dimension,
            const WaveProperties &wave_properties,
            unsigned int seed)
     : width_(lake_dimension.width()), length_(lake_dimension.length()),
-      mean_(lake_dimension.width(), lake_dimension.length()),
+      // mean_(lake_dimension.width(), lake_dimension.length()),
+      sum_height_(lake_dimension.width(), lake_dimension.length()),
       variance_(lake_dimension.width(), lake_dimension.length()),
       height_(lake_dimension.width(), lake_dimension.length()),
       wave_properties_(wave_properties), rng_(seed),
@@ -159,18 +160,18 @@ WaveProperties Lake::wave_properties() const {
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::printStatisticsTable(std::ostream &os) const {
+void Lake::printStatisticsTable(std::ostream &os, unsigned int steps) const {
   // TODO(erikaAkab): Print table with statistics for (x,y) lake positions
   //                  Print *mean* and *standard deviation* (sqrt of variance).
-  //                  Use precition %12.7f
+  //                  Use precision %12.7f
   for (unsigned int j = 0; j < height_.cols(); j++) {
       for (unsigned int i = 0; i < height_.rows(); i++) {
-        os << "(" << i << "," << j << "): " << std::endl;
-        os << "mean: "
-           << std::setiosflags(std::ios::fixed) << std::setprecision(7)
-           << mean_(i, j);
-        os << "standart deviation: "
-           << std::setiosflags(std::ios::fixed) << std::setprecision(7)
+        os << i << "\t" << j
+           << "\t"
+           << std::setiosflags(std::ios::fixed) << std::setprecision(12.7)
+           << sum_height_(i, j)/steps
+           << "\t"
+           << std::setiosflags(std::ios::fixed) << std::setprecision(12.7)
            << std::sqrt(variance_(i, j)) << std::endl;
       }
   }
@@ -190,7 +191,7 @@ void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
-        updateMean(i, j, height, iteration);
+        updateSum(i, j, height, iteration);
         updateVariance(i, j, height, iteration);
       }
     }
@@ -210,7 +211,7 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
-        updateMean(i, j, height, iteration);
+        updateSum(i, j, height, iteration);
         updateVariance(i, j, height, iteration);
 
         updateHeight(i, j, height, iteration);
@@ -246,11 +247,12 @@ Lake::affected_points(const Drop& drop,
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::updateMean(unsigned int i, unsigned int j,
+void Lake::updateSum(unsigned int i, unsigned int j,
                       float height, unsigned int step) {
   // TODO(karinaawoki): Update mean for position (i,j) incrementally.
   //                    Calculate mean of heights for all iterations.
-  mean_(i, j) = (mean_(i,j)*(step-1) + height)/step;
+  sum_height_(i,j) = (sum_height_(i,j)*(step-1) + height/step);
+  // mean_(i, j) = (mean_(i,j)*(step-1) + height)/step;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -262,9 +264,9 @@ void Lake::updateHeight(unsigned int i, unsigned int j,
   //  Calculate sum of heigths mean for a given iteration.
   height_(i, j) += height;
   if (height < max_depth_) max_depth_ = height;
-  if (height > max_height_) max_height_ = height;
+  else if (height > max_height_) max_height_ = height;
   updateVariance(i,j,height_(i,j), step);
-  updateMean(i, j, height_(i,j), step);
+  updateSum(i, j, height_(i,j), step);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -274,7 +276,9 @@ void Lake::updateVariance(unsigned int i, unsigned int j,
   // TODO(karinaawoki): Update variance for position (i,j) incrementally.
   //                    Calculate variance of heights for all iterations.
   //                    Tip: http://math.stackexchange.com/questions/102978/
-  variance_(i,j) = variance_(i,j)*(step-2)/(step-1) + (height-mean_(i,j))*(height-mean_(i,j))/step;
+  float mean = sum_height_(i,j)/step;
+  variance_(i,j) = variance_(i,j)*(step-2)/(step-1) + 
+    (height-mean)*(height-mean)/step;
 }
 
 /*----------------------------------------------------------------------------*/
