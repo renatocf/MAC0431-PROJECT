@@ -37,7 +37,7 @@ unsigned int Drop::time() const {
 
 /*----------------------------------------------------------------------------*/
 
-Point Drop::position() const {
+const Point &Drop::position() const {
   return position_;
 }
 

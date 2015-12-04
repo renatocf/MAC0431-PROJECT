@@ -32,7 +32,7 @@ class Drop {
 
   // Concrete methods
   unsigned int time() const;
-  Point position() const;
+  const Point &position() const;
 
  private:
   // Instance variables

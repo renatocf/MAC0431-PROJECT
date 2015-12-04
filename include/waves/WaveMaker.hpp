@@ -34,7 +34,7 @@ class Lake;
 class WaveMaker {
  public:
   // Concrete methods
-  std::map<float, std::vector<Point>> makeWave(const Drop& drop,
+  std::map<float, std::vector<Point>*> makeWave(const Drop& drop,
                                                unsigned int radius,
                                                unsigned int timestep,
                                                Lake* lake);
@@ -46,10 +46,7 @@ class WaveMaker {
   float square_error_;
 
   // Concrete methods
-  std::vector<Point> getCircle(unsigned int radius);
-  std::vector<Point> makeCircle(unsigned int radius,
-                                const Drop& drop,
-                                Dimension& sizes);
+  std::vector<Point>* getCircle(unsigned int radius);
 };
 
 }  // namespace waves

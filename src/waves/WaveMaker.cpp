@@ -30,20 +30,19 @@ namespace waves {
 /*                              CONCRETE METHODS                              */
 /*----------------------------------------------------------------------------*/
 
-std::map<float, std::vector<Point>> WaveMaker::makeWave(const Drop& drop,
+std::map<float, std::vector<Point>*> WaveMaker::makeWave(const Drop& drop,
                                                         unsigned int radius,
                                                         unsigned int timestep,
                                                         Lake* lake) {
-  std::map<float, std::vector<Point>> map;
+  std::map<float, std::vector<Point>*> map;
   unsigned int actualRadius = radius;
-  Dimension sizes = lake->dimension();
   float actualHeigth = lake->height(drop, actualRadius, timestep);
 
   float square_error = lake->wave_properties().error();
   square_error *= square_error;
 
   do {
-    map[actualHeigth] = makeCircle(actualRadius, drop, sizes);
+    map[actualHeigth] = getCircle(actualRadius);
     actualRadius++;
     actualHeigth = lake->height(drop, actualRadius, timestep);
   } while (actualHeigth * actualHeigth >= square_error);
@@ -52,7 +51,7 @@ std::map<float, std::vector<Point>> WaveMaker::makeWave(const Drop& drop,
   actualHeigth = lake->height(drop, actualRadius, timestep);
 
   while (actualHeigth * actualHeigth >= square_error && actualRadius > 0) {
-    map[actualHeigth] = makeCircle(actualRadius, drop, sizes);
+    map[actualHeigth] = getCircle(actualRadius);
     actualRadius--;
     actualHeigth = lake->height(drop, actualRadius, timestep);
   }
@@ -62,25 +61,14 @@ std::map<float, std::vector<Point>> WaveMaker::makeWave(const Drop& drop,
 
 /*----------------------------------------------------------------------------*/
 
-std::vector<Point> WaveMaker::getCircle(unsigned int radius) {
+std::vector<Point>* WaveMaker::getCircle(unsigned int radius) {
   auto it = circle_cache_.find(radius);
   if (it != circle_cache_.end()) {
-    return (*it).second;
+    return &((*it).second);
   }
 
   circle_cache_[radius] = builder_.createCircle(radius);
-  return circle_cache_[radius];
-}
-
-/*----------------------------------------------------------------------------*/
-
-std::vector<Point> WaveMaker::makeCircle(unsigned int radius,
-                                         const Drop& drop,
-                                         Dimension& sizes) {
-  auto circle = getCircle(radius);
-  builder_.addOffset(circle, drop.position());
-  builder_.removeExcess(circle, sizes);
-  return circle;
+  return &(circle_cache_[radius]);
 }
 
 /*----------------------------------------------------------------------------*/

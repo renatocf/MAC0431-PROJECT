@@ -32,7 +32,7 @@ namespace waves {
 /*                               STATIC METHODS                               */
 /*----------------------------------------------------------------------------*/
 
-void Lake::animationExample() {
+/*void Lake::animationExample() {
   waves::WaveMaker maker;
   for (int timestep = 10; timestep < 100; timestep++) {
     float speed = 1.5;
@@ -68,7 +68,7 @@ void Lake::animationExample() {
     }
     usleep(100000);
   }
-}
+}*/
 
 /*----------------------------------------------------------------------------*/
 /*                                CONSTRUCTORS                                */
@@ -162,7 +162,6 @@ void Lake::printStatisticsTable(std::ostream &os) const {
   //                  Use precition %12.7f
   for (unsigned int j = 0; j < height_.cols(); j++) {
       for (unsigned int i = 0; i < height_.rows(); i++) {
-        int h = height_(i, j);
         os << "(" << i << "," << j << "): " << std::endl;
         os << "mean: "
            << std::setiosflags(std::ios::fixed) << std::setprecision(7)
@@ -183,9 +182,14 @@ void Lake::ripple(const Drop &drop, unsigned int timestep) {
     const auto &height = association.first;
     const auto &points = association.second;
     #pragma omp parallel for schedule(static)
-    for (unsigned int k = 0; k < points.size(); k++) {
-      updateVariance(points[k].first, points[k].second, height, iteration);
-      updateMean(points[k].first, points[k].second, height, iteration++);
+    for (unsigned int k = 0; k < points->size(); k++) {
+      int i = (*points)[k].first + drop.position().first, j = (*points)[k].second + drop.position().second;
+      if(i < 0
+         || j < 0
+         || i >= static_cast<int>(length_)
+         || j >= static_cast<int>(width_))
+      updateVariance(i, j, height, iteration);
+      updateMean(i, j, height, iteration++);
     }
   }
 }
@@ -198,10 +202,16 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
     const auto &height = association.first;
     const auto &points = association.second;
     #pragma omp parallel for schedule(static)
-    for (unsigned int k = 0; k < points.size(); k++) {
-      //updateMean(points[k].first, points[k].second, height);
-      updateHeight(points[k].first, points[k].second, height, iteration++);
-      //updateVariance(points[k].first, points[k].second, height);
+    for (unsigned int k = 0; k < points->size(); k++) {
+      int i = (*points)[k].first + drop.position().first, j = (*points)[k].second + drop.position().second;
+      if(i < 0
+         || j < 0
+         || i >= static_cast<int>(length_)
+         || j >= static_cast<int>(width_)){
+        updateHeight(i, j, height, iteration++);
+        updateVariance(i, j, height, iteration);
+        updateMean(i, j, height, iteration++);
+      }
     }
   }
 }
@@ -223,7 +233,7 @@ inline float Lake::radius(const Drop &drop, unsigned int timestep) const {
 
 /*----------------------------------------------------------------------------*/
 
-inline std::map<float, std::vector<Point>>
+inline std::map<float, std::vector<Point>*>
 Lake::affected_points(const Drop& drop,
                       unsigned int radius,
                       unsigned int timestep) {

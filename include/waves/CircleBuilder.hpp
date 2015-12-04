@@ -31,8 +31,6 @@ class CircleBuilder {
  public:
   // Concrete methods
   std::vector<Point> createCircle(float radius);
-  void removeExcess(std::vector<Point>& points, Dimension& sizes);
-  void addOffset(std::vector<Point>& points, Point offset);
 
  private:
   // Concrete methods
@@ -42,7 +40,6 @@ class CircleBuilder {
   void addOpposedHorizontalPoints(std::vector<Point>& points);
   void createInitialPoints(std::vector<Point>& points, float radius);
   float distance(Point point);
-  float outOfBounds(Point& point, Dimension& sizes);
 };
 
 }  // namespace waves

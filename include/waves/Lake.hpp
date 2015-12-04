@@ -39,7 +39,7 @@ class Lake {
   using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
 
   // Static methods
-  static void animationExample();
+  // static void animationExample();
 
   // Constructors
   explicit Lake(const Dimension &lake_dimension,
@@ -85,7 +85,7 @@ class Lake {
 
   float radius(const Drop &drop, unsigned int timestep) const;
 
-  std::map<float, std::vector<Point>>
+  std::map<float, std::vector<Point>*>
   affected_points(const Drop &drop, unsigned int radius, unsigned int timestep);
 
   void updateMean(unsigned int i, unsigned int j, float height, unsigned int iteraction);

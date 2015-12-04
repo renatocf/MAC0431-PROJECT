@@ -61,32 +61,11 @@ void CircleBuilder::unfoldPoints(std::vector<Point>& points) {
 
 /*----------------------------------------------------------------------------*/
 
-void CircleBuilder::removeExcess(std::vector<Point>& points, Dimension& sizes) {
-  auto it = points.begin();
-  while (it != points.end()) {
-    if (outOfBounds(*it, sizes))
-      it = points.erase(it);
-    else
-      ++it;
-  }
-}
-
-/*----------------------------------------------------------------------------*/
-
 void CircleBuilder::addInvertedPoints(std::vector<Point>& points) {
   unsigned int actual_size = points.size();
   for (unsigned int i = 0; i < actual_size; i++)
     if (points[i].first != points[i].second)
       points.emplace_back(points[i].second, points[i].first);
-}
-
-/*----------------------------------------------------------------------------*/
-
-void CircleBuilder::addOffset(std::vector<Point>& points, Point offset) {
-  for (unsigned int i = 0; i < points.size(); i++) {
-    points[i].first += offset.first;
-    points[i].second += offset.second;
-  }
 }
 
 /*----------------------------------------------------------------------------*/
@@ -113,17 +92,6 @@ float CircleBuilder::distance(Point point) {
   auto a = point.first;
   auto b = point.second;
   return sqrt(a*a + b*b);
-}
-
-/*----------------------------------------------------------------------------*/
-
-float CircleBuilder::outOfBounds(Point& point, Dimension& sizes) {
-  bool condition = false;
-  condition = condition || point.first < 0;
-  condition = condition || point.second < 0;
-  condition = condition || point.first >= static_cast<int>(sizes.length());
-  condition = condition || point.second >= static_cast<int>(sizes.width());
-  return condition;
 }
 
 /*----------------------------------------------------------------------------*/
