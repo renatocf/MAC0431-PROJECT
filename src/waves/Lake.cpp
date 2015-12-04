@@ -20,55 +20,14 @@
 // Standard headers
 #include <map>
 #include <vector>
-#include <iomanip>
+#include <cstdio>
+#include <cstdlib>
 
 // Waves headers
 #include "waves/Lake.hpp"
 #include "waves/WaveMaker.hpp"
 
 namespace waves {
-
-/*----------------------------------------------------------------------------*/
-/*                               STATIC METHODS                               */
-/*----------------------------------------------------------------------------*/
-
-/*void Lake::animationExample() {
-  waves::WaveMaker maker;
-  for (int timestep = 10; timestep < 100; timestep++) {
-    float speed = 1.5;
-    float error = 0.001;
-    unsigned int radius = (timestep - 10) * speed;
-
-    waves::Drop drop(10, waves::Point(30, 17));
-
-    waves::WaveProperties props(speed, error);
-    waves::Lake lake(waves::Dimension(100, 100), props, 37);
-
-    auto map = maker.makeWave(drop, radius, timestep, &lake);
-
-    char matrix[100][100];
-
-    for (int i = 0; i < 100; i ++)
-      for (int j = 0; j < 100; j ++)
-        matrix[i][j] = ' ';
-
-    char valor = '1';
-
-    for (auto assoc : map) {
-      for (auto point : assoc.second) {
-        matrix[point.first][point.second] = valor;
-      }
-      valor++;
-    }
-
-    for (int i = 0; i < 100; i ++) {
-      for (int j = 0; j < 100; j ++)
-        std::cout << matrix[i][j];
-      std::cout << std::endl;
-    }
-    usleep(100000);
-  }
-}*/
 
 /*----------------------------------------------------------------------------*/
 /*                                CONSTRUCTORS                                */
@@ -87,7 +46,6 @@ Lake::Lake(const Dimension &lake_dimension,
            const WaveProperties &wave_properties,
            unsigned int seed)
     : width_(lake_dimension.width()), length_(lake_dimension.length()),
-      // mean_(lake_dimension.width(), lake_dimension.length()),
       sum_height_(lake_dimension.width(), lake_dimension.length()),
       variance_(lake_dimension.width(), lake_dimension.length()),
       height_(lake_dimension.width(), lake_dimension.length()),
@@ -108,7 +66,7 @@ void Lake::rainFor(unsigned int time,
   // Reserve space to avoid multiple allocations
   drops_.reserve(steps);
 
-  #pragma omp parallel for schedule(static)
+  // #pragma omp parallel for schedule(static)
   for (unsigned int t = 0; t < steps; t++)
     if (shouldDrop(drop_probability))
       drops_.push_back(createDrop(t * timeunit));
@@ -125,8 +83,9 @@ void Lake::rainFor(unsigned int time,
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::printPPM(std::ostream &os) const {
-  os << "P3" << height_.cols() << " " << height_.rows() << " 255" << std::endl;
+void Lake::printPPM(const std::string &file_name) const {
+  auto file = std::fopen(file_name.c_str(), "w");
+  std::fprintf(file, "P3\n%ld %ld\n255\n", height_.cols(), height_.rows());
 
   float delta
     = (max_height_ > -max_depth_) ? max_height_/255 : -max_depth_/255;
@@ -137,13 +96,15 @@ void Lake::printPPM(std::ostream &os) const {
       int height_color = static_cast<int>(h/delta + 0.5);
 
       if (h < 0)
-        os << -height_color << " 0 0" << "\n";
+        std::fprintf(file, "%d 0 0\n", -height_color);
       else if (h > 0)
-        os << "0 0 " << height_color << "\n";
+        std::fprintf(file, "0 0 %d\n", height_color);
       else
-        os << "0 0 0" << '\n';
+        std::fputs("0 0 0\n", file);
     }
   }
+  
+  std::fclose(file);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -160,28 +121,26 @@ WaveProperties Lake::wave_properties() const {
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::printStatisticsTable(std::ostream &os, unsigned int steps) const {
-  // TODO(erikaAkab): Print table with statistics for (x,y) lake positions
-  //                  Print *mean* and *standard deviation* (sqrt of variance).
-  //                  Use precision %12.7f
-  for (unsigned int j = 0; j < height_.cols(); j++) {
-      for (unsigned int i = 0; i < height_.rows(); i++) {
-        os << i << "\t" << j
-           << "\t"
-           << std::setiosflags(std::ios::fixed) << std::setprecision(12.7)
-           << sum_height_(i, j)/steps
-           << "\t"
-           << std::setiosflags(std::ios::fixed) << std::setprecision(12.7)
-           << std::sqrt(variance_(i, j)) << std::endl;
-      }
+void Lake::printStatisticsTable(const std::string &file_name,
+                                unsigned int steps) const {
+  auto file = std::fopen(file_name.c_str(), "w");
+  
+  for (unsigned int i = 0; i < height_.rows(); i++) {
+    for (unsigned int j = 0; j < height_.cols(); j++) {
+      std::fprintf(file, "%d\t" "%d\t" "%12.7f\t" "%12.7f\n",
+                   i, j, sum_height_(i, j)/steps, std::sqrt(variance_(i, j)));
+    }
   }
+
+  std::fclose(file);
 }
 
 /*----------------------------------------------------------------------------*/
 
 void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
-  //unsigned int iteration = 1;
-  auto point_map = affected_points(drop, radius(drop, step*timeunit), step*timeunit);
+  auto point_map
+    = affected_points(drop, radius(drop, step*timeunit), step*timeunit);
+
   for (const auto &association : point_map) {
     const auto &height = association.first;
     const auto &points = association.second;
@@ -191,8 +150,8 @@ void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
-        updateVariance(i, j, height, step);
-        updateSum(i, j, height, step);
+        updateVariance(i,j, height_(i,j), step);
+        updateSum(i, j, height_(i,j), step);
       }
     }
   }
@@ -200,8 +159,9 @@ void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
 /*----------------------------------------------------------------------------*/
 
 void Lake::rippleSnapshot(const Drop &drop, unsigned int step, float timeunit) {
-  // unsigned int iteration = 1;
-  auto point_map = affected_points(drop, radius(drop, step*timeunit), step*timeunit);
+  auto point_map
+    = affected_points(drop, radius(drop, step*timeunit), step*timeunit);
+
   for (const auto &association : point_map) {
     const auto &height = association.first;
     const auto &points = association.second;
@@ -211,10 +171,9 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
-        // updateSum(i, j, height, step);
-        // updateVariance(i, j, height, step);
-
         updateHeight(i, j, height, step);
+        updateVariance(i,j, height_(i,j), step);
+        updateSum(i, j, height_(i,j), step);
       }
     }
   }
@@ -249,48 +208,29 @@ Lake::affected_points(const Drop& drop,
 
 void Lake::updateSum(unsigned int i, unsigned int j,
                       float height, unsigned int step) {
-  // TODO(karinaawoki): Update mean for position (i,j) incrementally.
-  //                    Calculate mean of heights for all iterations.
   sum_height_(i,j) += height_(i,j);
-    // std::cout << sum_height_(i,j) << std::endl;
-
-  // mean_(i, j) = (mean_(i,j)*(step-1) + height)/step;
 }
 
 /*----------------------------------------------------------------------------*/
 
 void Lake::updateHeight(unsigned int i, unsigned int j,
                         float height, unsigned int step) {
-  
-  //  Update height for position (i,j).
-  //  Calculate sum of heigths mean for a given iteration.
   height_(i, j) += height;
   if (height < max_depth_) max_depth_ = height;
   else if (height > max_height_) max_height_ = height;
-  updateVariance(i,j,height_(i,j), step);
-  updateSum(i, j, height_(i,j), step);
 }
 
 /*----------------------------------------------------------------------------*/
 
 void Lake::updateVariance(unsigned int i, unsigned int j,
                           float height, unsigned int step) {
-  // TODO(karinaawoki): Update variance for position (i,j) incrementally.
-  //                    Calculate variance of heights for all iterations.
-  //                    Tip: http://math.stackexchange.com/questions/102978/
   float mean = sum_height_(i,j)*1.0/step;
-  // std::cout << step << std::endl;
 
   if(step == 1)
-  {
     variance_(i,j) = 0;
-  }
   else
-  {
-    variance_(i,j) = variance_(i,j)*(step-2)/(step-1) + 
-    (height-mean)*(height-mean)/step;
-    // std::cout << (step-2)/(step-1) << std::endl;
-  }
+    variance_(i,j) = variance_(i,j) * (step-2)/(step-1)
+                   + (height-mean) * (height-mean)/step;
 }
 
 /*----------------------------------------------------------------------------*/

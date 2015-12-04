@@ -20,6 +20,7 @@
 // Standard headers
 #include <map>
 #include <vector>
+#include <string>
 
 // External headers
 #include "Eigen/Core"
@@ -36,10 +37,8 @@ namespace waves {
 class Lake {
  public:
   // Alias
-  using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-
-  // Static methods
-  // static void animationExample();
+  using Matrix
+    = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
   // Constructors
   explicit Lake(const Dimension &lake_dimension,
@@ -54,8 +53,9 @@ class Lake {
   // Concrete methods
   void rainFor(unsigned int time, unsigned int steps, float drop_probability);
 
-  void printPPM(std::ostream &os) const;
-  void printStatisticsTable(std::ostream &os, unsigned int steps) const;
+  void printPPM(const std::string &file_name) const;
+  void printStatisticsTable(const std::string &file_name, 
+                            unsigned int steps) const;
 
   float height(const Drop &drop,
                unsigned int radius,
@@ -88,9 +88,12 @@ class Lake {
   std::map<float, std::vector<Point>*>
   affected_points(const Drop &drop, unsigned int radius, unsigned int timestep);
 
-  void updateSum(unsigned int i, unsigned int j, float height, unsigned int iteraction);
-  void updateHeight(unsigned int i, unsigned int j, float height, unsigned int iteraction);
-  void updateVariance(unsigned int i, unsigned int j, float height, unsigned int iteraction);
+  void updateSum(unsigned int i, unsigned int j,
+                 float height, unsigned int iteraction);
+  void updateHeight(unsigned int i, unsigned int j,
+                    float height, unsigned int iteraction);
+  void updateVariance(unsigned int i, unsigned int j,
+                      float height, unsigned int iteraction);
 
   Point drawPosition() const;
 
