@@ -28,11 +28,18 @@ namespace waves {
 class Drop {
  public:
   // Constructors
-  explicit Drop(unsigned int time, Point position);
+  explicit Drop(unsigned int time, Point position)
+    : time_(time), position_(position) {
+  }
 
   // Concrete methods
-  unsigned int time() const;
-  const Point &position() const;
+  unsigned int time() const {
+    return time_;
+  }
+
+  const Point &position() const {
+    return position_;
+  }
 
  private:
   // Instance variables

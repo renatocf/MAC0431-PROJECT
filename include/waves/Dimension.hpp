@@ -25,14 +25,25 @@ namespace waves {
 class Dimension {
  public:
   // Constructors
-  explicit Dimension(unsigned int width = 0, unsigned int length = 0);
+  explicit Dimension(unsigned int width = 0, unsigned int length = 0)
+    : width_(width), length_(length) {
+  }
 
   // Concrete methods
-  unsigned int width() const;
-  unsigned int length() const;
+  unsigned int width() const {
+    return width_;
+  }
+
+  unsigned int length() const {
+    return length_;
+  }
 
   // Friend functions
-  friend std::istream &operator>>(std::istream &input, Dimension &dim);
+  friend std::istream &operator>>(std::istream &input, Dimension &dim) {
+    char lpar, rpar, comma;
+    input >> lpar >> dim.width_ >> comma >> dim.length_ >> rpar;
+    return input;
+  }
 
  private:
   // Instance variables
