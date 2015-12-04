@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
   std::string input_file(argv[1]);
   int num_threads
-    = (argc == 3 && atoi(argv[2]) <= 0) ? atoi(argv[2]) : omp_get_num_threads();
+    = (argc == 3 && atoi(argv[2]) >= 0) ? atoi(argv[2]) : omp_get_num_threads();
 
   // OpenMP initialization
   omp_set_num_threads(num_threads);
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
   lake.printPPM(lake_output);
 
   std::ofstream table_output("/tmp/table.tsv");
-  lake.printStatisticsTable(table_output, steps);
+  lake.printStatisticsTable(table_output);
 
   return EXIT_SUCCESS;
 }
