@@ -100,7 +100,7 @@ Lake::Lake(const Dimension &lake_dimension,
 void Lake::rainFor(unsigned int time,
                    unsigned int steps,
                    float drop_probability) {
-  float timeunit = time/steps;
+  float timeunit = 1.0*time/steps;
 
   // Reserve space to avoid multiple allocations
   drops_.reserve(steps);
@@ -145,7 +145,7 @@ void Lake::printPPM(std::ostream &os) const {
 /*----------------------------------------------------------------------------*/
 
 Dimension Lake::dimension() const {
-  return Dimension(height_.cols(), height_.rows());
+  return Dimension(length_, width_);
 }
 
 /*----------------------------------------------------------------------------*/
