@@ -178,31 +178,30 @@ void Lake::printStatisticsTable(std::ostream &os) const {
 
 void Lake::ripple(const Drop &drop, unsigned int timestep) {
   auto point_map = affected_points(drop, radius(drop, timestep), timestep);
-
+  int iteration = 1;
   for (const auto &association : point_map) {
     const auto &height = association.first;
     const auto &points = association.second;
     #pragma omp parallel for schedule(static)
     for (unsigned int k = 0; k < points.size(); k++) {
-      updateMean(points[k].first, points[k].second, height);
-      updateVariance(points[k].first, points[k].second, height);
+      updateVariance(points[k].first, points[k].second, height, iteraction);
+      updateMean(points[k].first, points[k].second, height, iteraction++);
     }
   }
 }
-
 /*----------------------------------------------------------------------------*/
 
 void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
   auto point_map = affected_points(drop, radius(drop, timestep), timestep);
-
+  int iteration = 1;
   for (const auto &association : point_map) {
     const auto &height = association.first;
     const auto &points = association.second;
     #pragma omp parallel for schedule(static)
     for (unsigned int k = 0; k < points.size(); k++) {
-      updateMean(points[k].first, points[k].second, height);
-      updateHeight(points[k].first, points[k].second, height);
-      updateVariance(points[k].first, points[k].second, height);
+      //updateMean(points[k].first, points[k].second, height);
+      updateHeight(points[k].first, points[k].second, height, iteration++);
+      //updateVariance(points[k].first, points[k].second, height);
     }
   }
 }
@@ -233,28 +232,33 @@ Lake::affected_points(const Drop& drop,
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::updateMean(unsigned int /* i */, unsigned int /* j */,
-                      float /* height */) {
+void Lake::updateMean(unsigned int i, unsigned int j,
+                      float height , int iteraction) {
   // TODO(karinaawoki): Update mean for position (i,j) incrementally.
   //                    Calculate mean of heights for all iterations.
-  //                    Tip: http://math.stackexchange.com/questions/106700/
+  mean_(i, j) = (mean_(i,j)*(iteration-1) + height)/iteraction;
 }
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::updateHeight(unsigned int /* i */, unsigned int /* j */,
-                        float /* height */) {
-  // TODO(karinaawoki): Update height for position (i,j).
-  //                    Calculate sum of heigths mean for a given iteration.
+void Lake::updateHeight(unsigned int i, unsigned int j,
+                        float height, int iteraction) {
+  
+  //  Update height for position (i,j).
+  //  Calculate sum of heigths mean for a given iteration.
+  height_(i,j) = height;
+  updateVariance(i,j,height, iteraction);
+  updateMean(i, j, height, iteraction);
 }
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::updateVariance(unsigned int /* i */, unsigned int /* j */,
-                          float /* height */) {
+void Lake::updateVariance(unsigned int i, unsigned int j,
+                          float height, int iteraction) {
   // TODO(karinaawoki): Update variance for position (i,j) incrementally.
   //                    Calculate variance of heights for all iterations.
   //                    Tip: http://math.stackexchange.com/questions/102978/
+  variance_(i,j) = variance_(i,j)*(iteraction-2)/(iteraction-1) + (height-mean_(i,j))*(height-mean_(i,j))/iteration;
 }
 
 /*----------------------------------------------------------------------------*/
