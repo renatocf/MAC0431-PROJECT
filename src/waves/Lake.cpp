@@ -87,7 +87,9 @@ Lake::Lake(const Dimension &lake_dimension,
            const WaveProperties &wave_properties,
            unsigned int seed)
     : width_(lake_dimension.width()), length_(lake_dimension.length()),
-      height_(matrix_dimension.width(), matrix_dimension.length()),
+      mean_(lake_dimension.width(), lake_dimension.length()),
+      variance_(lake_dimension.width(), lake_dimension.length()),
+      height_(lake_dimension.width(), lake_dimension.length()),
       wave_properties_(wave_properties), rng_(seed),
       row_distribution_(0, width_), column_distribution_(0, length_),
       probability_distribution_(0.0, 1.0) {
@@ -184,12 +186,15 @@ void Lake::ripple(const Drop &drop, unsigned int timestep) {
     #pragma omp parallel for schedule(static)
     for (unsigned int k = 0; k < points->size(); k++) {
       int i = (*points)[k].first + drop.position().first, j = (*points)[k].second + drop.position().second;
-      if(i < 0
-         || j < 0
-         || i >= static_cast<int>(length_)
-         || j >= static_cast<int>(width_))
-      updateVariance(i, j, height, iteration);
-      updateMean(i, j, height, iteration++);
+      if(i >= 0
+         && j >= 0
+         && i < static_cast<int>(width_)
+         && j < static_cast<int>(length_))
+      {
+        updateVariance(i, j, height, iteration);
+        updateMean(i, j, height, iteration++);
+      }
+    
     }
   }
 }
@@ -204,10 +209,12 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
     #pragma omp parallel for schedule(static)
     for (unsigned int k = 0; k < points->size(); k++) {
       int i = (*points)[k].first + drop.position().first, j = (*points)[k].second + drop.position().second;
-      if(i < 0
-         || j < 0
-         || i >= static_cast<int>(length_)
-         || j >= static_cast<int>(width_)){
+      if(i >= 0
+         && j >= 0
+         && i < static_cast<int>(length_)
+         && j < static_cast<int>(width_))
+      {
+
         updateHeight(i, j, height, iteration++);
         updateVariance(i, j, height, iteration);
         updateMean(i, j, height, iteration++);
