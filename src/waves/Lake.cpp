@@ -242,10 +242,12 @@ void Lake::updateMean(unsigned int /* i */, unsigned int /* j */,
 
 /*----------------------------------------------------------------------------*/
 
-void Lake::updateHeight(unsigned int /* i */, unsigned int /* j */,
-                        float /* height */) {
+void Lake::updateHeight(unsigned int i, unsigned int j, float height) {
   // TODO(karinaawoki): Update height for position (i,j).
   //                    Calculate sum of heigths mean for a given iteration.
+  height_(i, j) += height;
+  if (height < max_depth_) max_depth_ = height;
+  if (height > max_height_) max_height_ = height;
 }
 
 /*----------------------------------------------------------------------------*/
