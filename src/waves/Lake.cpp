@@ -100,7 +100,7 @@ Lake::Lake(const Dimension &lake_dimension,
 void Lake::rainFor(unsigned int time,
                    unsigned int steps,
                    float drop_probability) {
-  float timeunit = time/steps;
+  float timeunit = 1.0*time/steps;
 
   // Reserve space to avoid multiple allocations
   drops_.reserve(steps);
@@ -145,7 +145,7 @@ void Lake::printPPM(std::ostream &os) const {
 /*----------------------------------------------------------------------------*/
 
 Dimension Lake::dimension() const {
-  return Dimension(height_.cols(), height_.rows());
+  return Dimension(length_, width_);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -177,23 +177,23 @@ void Lake::printStatisticsTable(std::ostream &os) const {
 /*----------------------------------------------------------------------------*/
 
 void Lake::ripple(const Drop &drop, unsigned int timestep) {
+  unsigned int iteration = 1;
   auto point_map = affected_points(drop, radius(drop, timestep), timestep);
-  int iteration = 1;
   for (const auto &association : point_map) {
     const auto &height = association.first;
     const auto &points = association.second;
     #pragma omp parallel for schedule(static)
     for (unsigned int k = 0; k < points.size(); k++) {
-      updateVariance(points[k].first, points[k].second, height, iteraction);
-      updateMean(points[k].first, points[k].second, height, iteraction++);
+      updateVariance(points[k].first, points[k].second, height, iteration);
+      updateMean(points[k].first, points[k].second, height, iteration++);
     }
   }
 }
 /*----------------------------------------------------------------------------*/
 
 void Lake::rippleSnapshot(const Drop &drop, unsigned int timestep) {
+  unsigned int iteration = 1;
   auto point_map = affected_points(drop, radius(drop, timestep), timestep);
-  int iteration = 1;
   for (const auto &association : point_map) {
     const auto &height = association.first;
     const auto &points = association.second;
@@ -233,32 +233,34 @@ Lake::affected_points(const Drop& drop,
 /*----------------------------------------------------------------------------*/
 
 void Lake::updateMean(unsigned int i, unsigned int j,
-                      float height , int iteraction) {
+                      float height, unsigned int iteration) {
   // TODO(karinaawoki): Update mean for position (i,j) incrementally.
   //                    Calculate mean of heights for all iterations.
-  mean_(i, j) = (mean_(i,j)*(iteration-1) + height)/iteraction;
+  mean_(i, j) = (mean_(i,j)*(iteration-1) + height)/iteration;
 }
 
 /*----------------------------------------------------------------------------*/
 
 void Lake::updateHeight(unsigned int i, unsigned int j,
-                        float height, int iteraction) {
+                        float height, unsigned int iteration) {
   
   //  Update height for position (i,j).
   //  Calculate sum of heigths mean for a given iteration.
-  height_(i,j) = height;
-  updateVariance(i,j,height, iteraction);
-  updateMean(i, j, height, iteraction);
+  height_(i, j) += height;
+  if (height < max_depth_) max_depth_ = height;
+  if (height > max_height_) max_height_ = height;
+  updateVariance(i,j,height, iteration);
+  updateMean(i, j, height, iteration);
 }
 
 /*----------------------------------------------------------------------------*/
 
 void Lake::updateVariance(unsigned int i, unsigned int j,
-                          float height, int iteraction) {
+                          float height, unsigned int iteration) {
   // TODO(karinaawoki): Update variance for position (i,j) incrementally.
   //                    Calculate variance of heights for all iterations.
   //                    Tip: http://math.stackexchange.com/questions/102978/
-  variance_(i,j) = variance_(i,j)*(iteraction-2)/(iteraction-1) + (height-mean_(i,j))*(height-mean_(i,j))/iteration;
+  variance_(i,j) = variance_(i,j)*(iteration-2)/(iteration-1) + (height-mean_(i,j))*(height-mean_(i,j))/iteration;
 }
 
 /*----------------------------------------------------------------------------*/

@@ -88,9 +88,9 @@ class Lake {
   std::map<float, std::vector<Point>>
   affected_points(const Drop &drop, unsigned int radius, unsigned int timestep);
 
-  void updateMean(unsigned int i, unsigned int j, float height, int iteraction);
-  void updateHeight(unsigned int i, unsigned int j, float height, int iteraction);
-  void updateVariance(unsigned int i, unsigned int j, float height, int iteraction);
+  void updateMean(unsigned int i, unsigned int j, float height, unsigned int iteraction);
+  void updateHeight(unsigned int i, unsigned int j, float height, unsigned int iteraction);
+  void updateVariance(unsigned int i, unsigned int j, float height, unsigned int iteraction);
 
   Point drawPosition() const;
 
