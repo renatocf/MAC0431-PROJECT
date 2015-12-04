@@ -180,7 +180,7 @@ void Lake::printStatisticsTable(std::ostream &os, unsigned int steps) const {
 /*----------------------------------------------------------------------------*/
 
 void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
-  unsigned int iteration = 1;
+  //unsigned int iteration = 1;
   auto point_map = affected_points(drop, radius(drop, step*timeunit), step*timeunit);
   for (const auto &association : point_map) {
     const auto &height = association.first;
@@ -191,8 +191,8 @@ void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
-        updateSum(i, j, height, iteration);
-        updateVariance(i, j, height, iteration);
+        updateVariance(i, j, height, step);
+        updateSum(i, j, height, step);
       }
     }
   }
@@ -200,7 +200,7 @@ void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
 /*----------------------------------------------------------------------------*/
 
 void Lake::rippleSnapshot(const Drop &drop, unsigned int step, float timeunit) {
-  unsigned int iteration = 1;
+  // unsigned int iteration = 1;
   auto point_map = affected_points(drop, radius(drop, step*timeunit), step*timeunit);
   for (const auto &association : point_map) {
     const auto &height = association.first;
@@ -211,10 +211,10 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
-        updateSum(i, j, height, iteration);
-        updateVariance(i, j, height, iteration);
+        // updateSum(i, j, height, step);
+        // updateVariance(i, j, height, step);
 
-        updateHeight(i, j, height, iteration);
+        updateHeight(i, j, height, step);
       }
     }
   }
@@ -251,7 +251,9 @@ void Lake::updateSum(unsigned int i, unsigned int j,
                       float height, unsigned int step) {
   // TODO(karinaawoki): Update mean for position (i,j) incrementally.
   //                    Calculate mean of heights for all iterations.
-  sum_height_(i,j) = (sum_height_(i,j)*(step-1) + height/step);
+  sum_height_(i,j) += height_(i,j);
+    // std::cout << sum_height_(i,j) << std::endl;
+
   // mean_(i, j) = (mean_(i,j)*(step-1) + height)/step;
 }
 
@@ -276,9 +278,19 @@ void Lake::updateVariance(unsigned int i, unsigned int j,
   // TODO(karinaawoki): Update variance for position (i,j) incrementally.
   //                    Calculate variance of heights for all iterations.
   //                    Tip: http://math.stackexchange.com/questions/102978/
-  float mean = sum_height_(i,j)/step;
-  variance_(i,j) = variance_(i,j)*(step-2)/(step-1) + 
+  float mean = sum_height_(i,j)*1.0/step;
+  // std::cout << step << std::endl;
+
+  if(step == 1)
+  {
+    variance_(i,j) = 0;
+  }
+  else
+  {
+    variance_(i,j) = variance_(i,j)*(step-2)/(step-1) + 
     (height-mean)*(height-mean)/step;
+    // std::cout << (step-2)/(step-1) << std::endl;
+  }
 }
 
 /*----------------------------------------------------------------------------*/
