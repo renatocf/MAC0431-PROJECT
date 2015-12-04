@@ -80,8 +80,8 @@ class Lake {
   float max_depth_ = 0, max_height_ = 0;
 
   // Concrete methods
-  void ripple(const Drop &drop, unsigned int timestep);
-  void rippleSnapshot(const Drop &drop, unsigned int timestep);
+  void ripple(const Drop &drop, unsigned int step, float timeunit);
+  void rippleSnapshot(const Drop &drop, unsigned int step, float timeunit);
 
   float radius(const Drop &drop, unsigned int timestep) const;
 
