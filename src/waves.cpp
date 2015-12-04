@@ -70,7 +70,12 @@ int main(int argc, char **argv) {
 
   waves::Lake lake(lake_dimensions, matrix_dimensions, wave_properties, seed);
   lake.rainFor(time, steps, drop_porcentage/100);
-  lake.printPPM(std::cout);
+
+  std::ofstream lake_output("/tmp/lake.ppm");
+  lake.printPPM(lake_output);
+
+  std::ofstream table_output("/tmp/table.tsv");
+  lake.printStatisticsTable(table_output, steps);
 
   return EXIT_SUCCESS;
 }
