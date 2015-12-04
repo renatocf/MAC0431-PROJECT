@@ -249,8 +249,8 @@ void Lake::updateHeight(unsigned int i, unsigned int j,
   height_(i, j) += height;
   if (height < max_depth_) max_depth_ = height;
   if (height > max_height_) max_height_ = height;
-  updateVariance(i,j,height, iteration);
-  updateMean(i, j, height, iteration);
+  updateVariance(i,j,height_(i,j), iteration);
+  updateMean(i, j, height_(i,j), iteration);
 }
 
 /*----------------------------------------------------------------------------*/
