@@ -36,7 +36,7 @@ namespace waves {
 class Lake {
  public:
   // Alias
-  using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
+  using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
   // Static methods
   // static void animationExample();
@@ -55,7 +55,7 @@ class Lake {
   void rainFor(unsigned int time, unsigned int steps, float drop_probability);
 
   void printPPM(std::ostream &os) const;
-  void printStatisticsTable(std::ostream &os) const;
+  void printStatisticsTable(std::ostream &os, unsigned int steps) const;
 
   float height(const Drop &drop,
                unsigned int radius,
@@ -67,7 +67,7 @@ class Lake {
  private:
   // Instance variables
   unsigned int width_, length_;
-  Matrix height_, mean_, variance_;
+  Matrix height_, sum_height_, variance_;
   WaveProperties wave_properties_;
   std::vector<Drop> drops_;
   WaveMaker wave_maker_;
@@ -88,7 +88,7 @@ class Lake {
   std::map<float, std::vector<Point>*>
   affected_points(const Drop &drop, unsigned int radius, unsigned int timestep);
 
-  void updateMean(unsigned int i, unsigned int j, float height, unsigned int iteraction);
+  void updateSum(unsigned int i, unsigned int j, float height, unsigned int iteraction);
   void updateHeight(unsigned int i, unsigned int j, float height, unsigned int iteraction);
   void updateVariance(unsigned int i, unsigned int j, float height, unsigned int iteraction);
 
