@@ -71,8 +71,8 @@ int main(int argc, char **argv) {
   waves::Lake lake(lake_dimensions, wave_properties, seed);
   lake.rainFor(time, steps, drop_porcentage/100);
 
-  lake.printPPM("/tmp/lake.ppm");
-  lake.printStatisticsTable("/tmp/table.tsv", steps);
+  lake.printPPM("lake.ppm");
+  lake.printStatisticsTable("statistics.tsv", steps);
 
   return EXIT_SUCCESS;
 }
