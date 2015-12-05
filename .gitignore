@@ -28,3 +28,7 @@ doc/Doxyfile.mk
 *.d
 *.dep
 
+# Data files
+# ============
+*.ppm
+*.tsv
