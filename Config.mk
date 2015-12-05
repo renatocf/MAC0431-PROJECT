@@ -5,15 +5,20 @@
 
 # Project info
 # ===============
-# PROJECT         := # Project name (def: Default)
-# VERSION         := # Version (def: 1.0.0)
-# STD_NAMESPACE   := # Project namespace for C/C++
-# GIT_REMOTE_PATH := # Remote path for git repository
-# MAINTEINER_NAME := # Your name
-# MAINTEINER_MAIL := # your_name@mail.com
-# COPYRIGHT       := # Copyright Holder
-# SYNOPSIS        := # One-line description of the program
-# DESCRIPTION     := # Longer description of the program
+PROJECT         := Waves
+VERSION         := 1.0.0
+STD_NAMESPACE   := waves
+GIT_REMOTE_PATH := https://github.com/renatocf/MAC0431-PROJECT.git
+MAINTEINER_NAME := Erika Midori Akabane \
+                   Karina Suemi Awoki \
+                   Renato Cordeiro Ferreira \
+                   Vinícius Nascimento Silva
+MAINTEINER_MAIL := # your_name@mail.com
+COPYRIGHT       := MAC0431-PROJECT
+SYNOPSIS        := Challenge for the discipline MAC0431
+DESCRIPTION     := Simulation of waves in a lake for the discipline \
+                   MAC0431 (Introduction to Parallel and Distributed \
+                   Programming)
 
 # Program settings
 # ==================
