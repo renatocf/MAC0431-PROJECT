@@ -54,7 +54,7 @@ class Lake {
   void rainFor(unsigned int time, unsigned int steps, float drop_probability);
 
   void printPPM(const std::string &file_name) const;
-  void printStatisticsTable(const std::string &file_name, 
+  void printStatisticsTable(const std::string &file_name,
                             unsigned int steps) const;
 
   float height(const Drop &drop,

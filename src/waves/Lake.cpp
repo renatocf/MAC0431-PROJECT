@@ -19,9 +19,9 @@
 
 // Standard headers
 #include <map>
-#include <vector>
 #include <cstdio>
-#include <cstdlib>
+#include <string>
+#include <vector>
 
 // Waves headers
 #include "waves/Lake.hpp"
@@ -103,7 +103,7 @@ void Lake::printPPM(const std::string &file_name) const {
         std::fputs("0 0 0\n", file);
     }
   }
-  
+
   std::fclose(file);
 }
 
@@ -124,7 +124,7 @@ WaveProperties Lake::wave_properties() const {
 void Lake::printStatisticsTable(const std::string &file_name,
                                 unsigned int steps) const {
   auto file = std::fopen(file_name.c_str(), "w");
-  
+
   for (unsigned int i = 0; i < height_.rows(); i++) {
     for (unsigned int j = 0; j < height_.cols(); j++) {
       std::fprintf(file, "%d\t" "%d\t" "%12.7f\t" "%12.7f\n",
@@ -150,8 +150,8 @@ void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
-        updateVariance(i,j, height_(i,j), step);
-        updateSum(i, j, height_(i,j), step);
+        updateVariance(i, j, height_(i, j), step);
+        updateSum(i, j, height_(i, j), step);
       }
     }
   }
@@ -172,8 +172,8 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int step, float timeunit) {
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
         updateHeight(i, j, height, step);
-        updateVariance(i,j, height_(i,j), step);
-        updateSum(i, j, height_(i,j), step);
+        updateVariance(i, j, height_(i, j), step);
+        updateSum(i, j, height_(i, j), step);
       }
     }
   }
@@ -208,7 +208,7 @@ Lake::affected_points(const Drop& drop,
 
 void Lake::updateSum(unsigned int i, unsigned int j,
                       float height, unsigned int step) {
-  sum_height_(i,j) += height_(i,j);
+  sum_height_(i, j) += height_(i, j);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -224,13 +224,13 @@ void Lake::updateHeight(unsigned int i, unsigned int j,
 
 void Lake::updateVariance(unsigned int i, unsigned int j,
                           float height, unsigned int step) {
-  float mean = sum_height_(i,j)*1.0/step;
+  float mean = sum_height_(i, j)*1.0/step;
 
-  if(step == 1)
-    variance_(i,j) = 0;
+  if (step == 1)
+    variance_(i, j) = 0;
   else
-    variance_(i,j) = variance_(i,j) * (step-2)/(step-1)
-                   + (height-mean) * (height-mean)/step;
+    variance_(i, j) = variance_(i, j) * (step-2)/(step-1)
+                    + (height-mean) * (height-mean)/step;
 }
 
 /*----------------------------------------------------------------------------*/
