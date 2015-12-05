@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 
   waves::WaveProperties wave_properties(speed, height_error);
 
-  waves::Lake lake(lake_dimensions, matrix_dimensions, wave_properties, seed);
+  waves::Lake lake(lake_dimensions, wave_properties, seed);
   lake.rainFor(time, steps, drop_porcentage/100);
 
   lake.printPPM("/tmp/lake.ppm");

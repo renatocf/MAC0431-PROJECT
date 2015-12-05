@@ -36,15 +36,6 @@ namespace waves {
 Lake::Lake(const Dimension &lake_dimension,
            const WaveProperties &wave_properties,
            unsigned int seed)
-    : Lake(lake_dimension, lake_dimension, wave_properties, seed) {
-}
-
-/*----------------------------------------------------------------------------*/
-
-Lake::Lake(const Dimension &lake_dimension,
-           const Dimension &matrix_dimension,
-           const WaveProperties &wave_properties,
-           unsigned int seed)
     : width_(lake_dimension.width()), length_(lake_dimension.length()),
       sum_height_(lake_dimension.width(), lake_dimension.length()),
       variance_(lake_dimension.width(), lake_dimension.length()),
@@ -150,8 +141,8 @@ void Lake::ripple(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
-        updateVariance(i, j, height_(i, j), step);
-        updateSum(i, j, height_(i, j), step);
+        updateSum(i, j, height, step);
+        updateVariance(i, j, height, step);
       }
     }
   }
@@ -171,9 +162,10 @@ void Lake::rippleSnapshot(const Drop &drop, unsigned int step, float timeunit) {
       int j = (*points)[k].second + drop.position().second;
       if (i >= 0 && j >= 0
       &&  i < static_cast<int>(width_) && j < static_cast<int>(length_)) {
+        updateSum(i, j, height, step);
+        updateVariance(i, j, height, step);
+
         updateHeight(i, j, height, step);
-        updateVariance(i, j, height_(i, j), step);
-        updateSum(i, j, height_(i, j), step);
       }
     }
   }
@@ -207,14 +199,14 @@ Lake::affected_points(const Drop& drop,
 /*----------------------------------------------------------------------------*/
 
 void Lake::updateSum(unsigned int i, unsigned int j,
-                      float height, unsigned int step) {
-  sum_height_(i, j) += height_(i, j);
+                     float height, unsigned int /* step */) {
+  sum_height_(i, j) += height;
 }
 
 /*----------------------------------------------------------------------------*/
 
 void Lake::updateHeight(unsigned int i, unsigned int j,
-                        float height, unsigned int step) {
+                        float height, unsigned int /* step */) {
   height_(i, j) += height;
   if (height < max_depth_) max_depth_ = height;
   else if (height > max_height_) max_height_ = height;

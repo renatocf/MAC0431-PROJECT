@@ -45,11 +45,6 @@ class Lake {
                 const WaveProperties &wave_properties,
                 unsigned int seed = 42);
 
-  explicit Lake(const Dimension &lake_dimension,
-                const Dimension &matrix_dimension,
-                const WaveProperties &wave_properties,
-                unsigned int seed = 42);
-
   // Concrete methods
   void rainFor(unsigned int time, unsigned int steps, float drop_probability);
 
@@ -67,7 +62,7 @@ class Lake {
  private:
   // Instance variables
   unsigned int width_, length_;
-  Matrix height_, sum_height_, variance_;
+  Matrix sum_height_, variance_, height_;
   WaveProperties wave_properties_;
   std::vector<Drop> drops_;
   WaveMaker wave_maker_;
