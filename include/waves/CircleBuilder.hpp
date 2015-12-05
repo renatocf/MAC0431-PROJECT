@@ -34,11 +34,11 @@ class CircleBuilder {
 
  private:
   // Concrete methods
-  void unfoldPoints(std::vector<Point>& points);
-  void addInvertedPoints(std::vector<Point>& points);
-  void addOpposedVerticalPoints(std::vector<Point>& points);
-  void addOpposedHorizontalPoints(std::vector<Point>& points);
-  void createInitialPoints(std::vector<Point>& points, float radius);
+  void unfoldPoints(std::vector<Point> &points);
+  void addInvertedPoints(std::vector<Point> &points);
+  void addOpposedVerticalPoints(std::vector<Point> &points);
+  void addOpposedHorizontalPoints(std::vector<Point> &points);
+  void createInitialPoints(std::vector<Point> &points, float radius);
   float distance(Point point);
 };
 

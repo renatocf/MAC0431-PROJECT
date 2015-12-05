@@ -40,7 +40,7 @@ std::vector<Point> CircleBuilder::createCircle(float radius) {
 
 /*----------------------------------------------------------------------------*/
 
-void CircleBuilder::createInitialPoints(std::vector<Point>& points,
+void CircleBuilder::createInitialPoints(std::vector<Point> &points,
                                         float radius) {
   float minCoordinate = radius*sqrt(2)/2;
   int iMin = floor(minCoordinate);
@@ -53,7 +53,7 @@ void CircleBuilder::createInitialPoints(std::vector<Point>& points,
 
 /*----------------------------------------------------------------------------*/
 
-void CircleBuilder::unfoldPoints(std::vector<Point>& points) {
+void CircleBuilder::unfoldPoints(std::vector<Point> &points) {
   addInvertedPoints(points);
   addOpposedVerticalPoints(points);
   addOpposedHorizontalPoints(points);
@@ -61,7 +61,7 @@ void CircleBuilder::unfoldPoints(std::vector<Point>& points) {
 
 /*----------------------------------------------------------------------------*/
 
-void CircleBuilder::addInvertedPoints(std::vector<Point>& points) {
+void CircleBuilder::addInvertedPoints(std::vector<Point> &points) {
   unsigned int actual_size = points.size();
   for (unsigned int i = 0; i < actual_size; i++)
     if (points[i].first != points[i].second)
@@ -70,7 +70,7 @@ void CircleBuilder::addInvertedPoints(std::vector<Point>& points) {
 
 /*----------------------------------------------------------------------------*/
 
-void CircleBuilder::addOpposedVerticalPoints(std::vector<Point>& points) {
+void CircleBuilder::addOpposedVerticalPoints(std::vector<Point> &points) {
   unsigned int actual_size = points.size();
   for (unsigned int i = 0; i < actual_size; i++)
     if (points[i].first != 0)
@@ -79,7 +79,7 @@ void CircleBuilder::addOpposedVerticalPoints(std::vector<Point>& points) {
 
 /*----------------------------------------------------------------------------*/
 
-void CircleBuilder::addOpposedHorizontalPoints(std::vector<Point>& points) {
+void CircleBuilder::addOpposedHorizontalPoints(std::vector<Point> &points) {
   unsigned int actual_size = points.size();
   for (unsigned int i = 0; i < actual_size; i++)
     if (points[i].second != 0)
